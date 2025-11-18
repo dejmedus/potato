@@ -1,0 +1,94 @@
+{
+  "name": "potato",
+  "displayName": "potato",
+  "description": "🥔🥔🥔",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.106.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "potato",
+        "aliases": [
+          "Potato",
+          "potato"
+        ],
+        "extensions": [
+          ".potato",
+          ".tato",
+          ".🥔"
+        ],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./potato.svg",
+          "dark": "./potato.svg"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "potato",
+        "scopeName": "source.potato",
+        "path": "./syntaxes/potato.tmLanguage.json"
+      }
+    ],
+    "configurationDefaults": {
+      "editor.tokenColorCustomizations": {
+        "textMateRules": [
+          {
+            "scope": "operator.p.potato",
+            "settings": {
+              "foreground": "#ff6060"
+            }
+          },
+          {
+            "scope": "operator.o.potato",
+            "settings": {
+              "foreground": "#ffb326"
+            }
+          },
+          {
+            "scope": "operator.t1.potato",
+            "settings": {
+              "foreground": "#fa95ff"
+            }
+          },
+          {
+            "scope": "operator.a.potato",
+            "settings": {
+              "foreground": "#63f221"
+            }
+          },
+          {
+            "scope": "operator.t2.potato",
+            "settings": {
+              "foreground": "#45daff"
+            }
+          },
+          {
+            "scope": "operator.o2.potato",
+            "settings": {
+              "foreground": "#b255ff"
+            }
+          },
+          {
+            "scope": "keyword.other.say.potato",
+            "settings": {
+              "foreground": "#666666"
+            }
+          },
+          {
+            "scope": "constant.numeric.potato",
+            "settings": {
+              "foreground": "#606060"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

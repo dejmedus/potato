@@ -1,0 +1,43 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Potato",
+  "scopeName": "source.potato",
+  "patterns": [
+    { "include": "#numbers" },
+    { "include": "#say" },
+    { "include": "#potato_rainbow" }
+  ],
+  "repository": {
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.potato",
+          "match": "\\b\\d+\\b"
+        }
+      ]
+    },
+    "say": {
+      "patterns": [
+        {
+          "name": "keyword.other.say.potato",
+          "match": "\\bsay\\b"
+        }
+      ]
+    },
+    "potato_rainbow": {
+      "patterns": [
+        {
+          "match": "\\b(p)(o)(t)(a)(t)(o)\\b",
+          "captures": {
+            "1": { "name": "operator.p.potato" },
+            "2": { "name": "operator.o.potato" },
+            "3": { "name": "operator.t1.potato" },
+            "4": { "name": "operator.a.potato" },
+            "5": { "name": "operator.t2.potato" },
+            "6": { "name": "operator.o2.potato" }
+          }
+        }
+      ]
+    }
+  }
+}

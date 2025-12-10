@@ -1,41 +1,22 @@
 module Potato
   class Parser
     def self.parse(source)
-      tokens = Tokenizer.tokenize(source)
-
-      if tokens[0].type == :SAY
-         has_add = tokens.any? { |t| t.type == :ADD }
-        
-        if has_add
-          left = nil
-          right = nil
-          tokens.each_with_index do |token, index|
-            if token.type == :NUMBER && left.nil?
-              left = token.value
-            elsif token.type == :NUMBER && !left.nil?
-              right = token.value
-            end
-          end
-          expression = left + right
-          puts expression
-        end
+      source.lines.each do |line|
+        tokens = Tokenizer.tokenize_line(line)
+        next if tokens.empty?
+        run_line(tokens)
       end
+    end
+
+    def self.run_line(tokens)
+      return unless tokens[0]&.type == :SAY
+      return unless tokens.any? { |t| t.type == :ADD }
+
+      numbers = tokens.select { |t| t.type == :NUMBER }.map(&:value)
+      return unless numbers.size >= 2
+
+      result = numbers.reduce(0, :+)
+      puts result
     end
   end
 end
-
-
-# Say → instruction node
-# Add → operator node
-# Number → literal node
-
-#Say
-#  └── Add
-#       ├── Number(2)
-#       └── Number(4)
-#       
-#
-# token types
-# Number
-# Potato (Add)
-# Say

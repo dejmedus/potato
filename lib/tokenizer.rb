@@ -12,20 +12,21 @@ module Potato
     end
   end
 
-  class Tokenizer
-    def self.tokenize(source)
-      tokens = []
-      source.split(/\s+/).each do |token|
-        case token
-        when "say"
-          tokens << Token.new(:SAY, nil)
-        when "potato"
-          tokens << Token.new(:ADD, nil)
-        else
-          tokens << Token.new(:NUMBER, token.to_i)
+ class Tokenizer
+    def self.tokenize_line(line)
+      line
+        .strip
+        .split(/\s+/)
+        .reject(&:empty?)
+        .map do |token|
+          case token.downcase
+          when "say"    then Token.new(:SAY, nil)
+          when "potato" then Token.new(:ADD, nil)
+          when /^\d+$/  then Token.new(:NUMBER, token.to_i)
+          else
+            raise "Unknown token: #{token}"
+          end
         end
-      end
-      tokens
     end
   end
 end

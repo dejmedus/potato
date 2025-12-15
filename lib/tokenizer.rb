@@ -13,14 +13,14 @@ module Potato
   end
 
  class Tokenizer
-    def self.tokenize_line(line)
+    def self.tokenize(line)
       line
         .strip
         .split(/\s+/)
         .reject(&:empty?)
         .map do |token|
           case token.downcase
-          when "say"    then Token.new(:SAY, nil)
+          when "say"    then Token.new(:PRINT, nil)
           when "potato" then Token.new(:ADD, nil)
           when /^\d+$/  then Token.new(:NUMBER, token.to_i)
           else

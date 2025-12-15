@@ -1,22 +1,26 @@
 module Potato
-  class Parser
+ class Parser
     def self.parse(source)
       source.lines.each do |line|
-        tokens = Tokenizer.tokenize_line(line)
+        tokens = Tokenizer.tokenize(line)
         next if tokens.empty?
-        run_line(tokens)
+        render(tokens)
       end
     end
 
-    def self.run_line(tokens)
-      return unless tokens[0]&.type == :SAY
+    def self.render(tokens)
+      return unless tokens[0]&.type == :PRINT
       return unless tokens.any? { |t| t.type == :ADD }
 
       numbers = tokens.select { |t| t.type == :NUMBER }.map(&:value)
       return unless numbers.size >= 2
 
-      result = numbers.reduce(0, :+)
-      puts result
+      add_node = AST::Node.new(:add, nil, numbers.map { |n| AST::Node.new(:number, n, []) })
+      print_node = AST::Node.new(:print, nil, [add_node])
+      
+      # PrintAST.print(print_node)
+      Interpreter.eval(print_node)
     end
   end
+
 end

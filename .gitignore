@@ -3,3 +3,6 @@
 *.gem
 references.md
 **/*.vsix
+
+main.potato
+potat.o

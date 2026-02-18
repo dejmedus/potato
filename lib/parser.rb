@@ -4,11 +4,11 @@ module Potato
       source.lines.each do |line|
         tokens = Tokenizer.tokenize(line)
         next if tokens.empty?
-        render(tokens)
+        return ast(tokens)
       end
     end
 
-    def self.render(tokens)
+    def self.ast(tokens)
       return unless tokens[0]&.type == :PRINT
       return unless tokens.any? { |t| t.type == :ADD }
 
@@ -19,8 +19,8 @@ module Potato
       print_node = AST::Node.new(:print, nil, [add_node])
       
       # PrintAST.print(print_node)
-      Interpreter.eval(print_node)
+      # Interpreter.eval(print_node)
+      return print_node
     end
   end
-
 end

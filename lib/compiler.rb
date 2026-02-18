@@ -1,7 +1,9 @@
 class Compiler
   def self.compile(ast)
     File.open("potat.o", "wb") do |f|
-      self.ir(ast, f)
+      for node in ast
+        self.ir(node, f)
+      end
     end
   end
 

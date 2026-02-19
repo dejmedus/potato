@@ -12,7 +12,7 @@ module Potato
     end
   end
 
- class Tokenizer
+  class Tokenizer
     def self.tokenize(line)
       line
         .strip
@@ -22,7 +22,9 @@ module Potato
           case token.downcase
           when "say"    then Token.new(:PRINT, nil)
           when "potato" then Token.new(:ADD, nil)
+          when "is"     then Token.new(:EQUALS, nil)
           when /^\d+$/  then Token.new(:NUMBER, token.to_i)
+          when /^[a-zA-Z_]\w*$/ then Token.new(:VARIABLE, token)
           else
             raise "Unknown token: #{token}"
           end

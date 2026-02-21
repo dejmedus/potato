@@ -1,7 +1,6 @@
 require_relative "tokenizer"
 require_relative "ast"
 require_relative "parser"
-require_relative "interpreter"
 require_relative "compiler"
 require_relative "vm"
 

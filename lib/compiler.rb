@@ -29,7 +29,12 @@ class Compiler
     when :number
       f.write([0x01].pack("C"))
       f.write([node.value].pack("L>"))
-    
+
+    when :string
+      f.write([0x06].pack("C"))
+      f.write([node.value.bytesize].pack("L>"))
+      f.write(node.value)
+
     when :add
       node.children.each { |child| ir(child, f) }
       f.write([0x02].pack("C"))

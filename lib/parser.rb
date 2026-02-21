@@ -24,9 +24,13 @@ module Potato
         else
           ast_expression(tokens)
         end
+      when :STRING
+        AST::Node.new(:string, tokens[0].value, [])
       when :ADD
         raise "More numbers please" unless tokens[1..].size >= 2
         AST::Node.new(:add, nil, tokens[1..].map { |t| ast_expression([t]) })
+      when :COMMENT
+        nil
       else
         raise "Unknown statement: #{tokens[0].type}"
       end
@@ -42,6 +46,8 @@ module Potato
           return AST::Node.new(:number, token.value, [])
         when :VARIABLE
           return AST::Node.new(:variable, token.value, [])
+        when :STRING
+          return AST::Node.new(:string, token.value, [])
         else
           raise "Unknown expression: #{token.type}"
         end

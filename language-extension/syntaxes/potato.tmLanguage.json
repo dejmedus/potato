@@ -5,6 +5,8 @@
   "patterns": [
     { "include": "#numbers" },
     { "include": "#say" },
+    { "include": "#is" },
+    { "include": "#comment" },
     { "include": "#potato_rainbow" }
   ],
   "repository": {
@@ -21,6 +23,22 @@
         {
           "name": "keyword.other.say.potato",
           "match": "\\bsay\\b"
+        }
+      ]
+    },
+    "is": {
+      "patterns": [
+        {
+          "name": "keyword.operator.is.potato",
+          "match": "\\bis\\b"
+        }
+      ]
+    },
+    "comment": {
+      "patterns": [
+        {
+          "name": "comment.line.potato",
+          "match": "🍠.+"
         }
       ]
     },

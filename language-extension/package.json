@@ -82,6 +82,18 @@
             }
           },
           {
+            "scope": "comment.line.potato",
+            "settings": {
+              "foreground": "#aaaaaa"
+            }
+          },
+          {
+            "scope": "keyword.operator.is.potato",
+            "settings": {
+              "foreground": "#606060"
+            }
+          },
+          {
             "scope": "constant.numeric.potato",
             "settings": {
               "foreground": "#606060"

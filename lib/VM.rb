@@ -32,7 +32,7 @@ module PotatoVM
           when 0x04 # variable
             index = f.read(4).unpack1("L>")
             stack.push(locals[index])
-            raise "Oop: #{symbol_table[index]}?" if locals[index].nil?
+            err "#{symbol_table[index]}?" if locals[index].nil?
           when 0x05 # assign
             index_bytes = f.read(4)
             index = index_bytes.unpack1("L>")

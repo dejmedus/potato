@@ -18,3 +18,7 @@ module PotatoVM
     VM.run
   end
 end
+
+def err(msg)
+  abort "\e[31m#{msg}\e[0m"
+end

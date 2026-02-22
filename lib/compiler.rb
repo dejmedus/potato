@@ -45,14 +45,15 @@ class Compiler
 
     when :variable
       index = @symbol_table[node.value]
-      f.write([0x04].pack("C")) 
+      err "Unknown variable: #{node.value}" unless index
+      f.write([0x04].pack("C"))
       f.write([index].pack("L>"))
 
     when :assign
       ir(node.children[1], f)
 
       var_name = node.children[0].value
-      index = @symbol_table[var_name]   
+      index = @symbol_table[var_name]
 
       f.write([0x05].pack("C"))       
       f.write([index].pack("L>"))

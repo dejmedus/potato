@@ -12,13 +12,13 @@ module Potato
     def self.ast(tokens)
       case tokens[0]&.type
       when :PRINT
-        raise "Say what?" unless tokens[1..].size >= 1
+        err "Say what?" unless tokens[1..].size >= 1
 
         AST::Node.new(:print, nil, [parse_expression(tokens[1..])])
       when :VARIABLE
         parse_expression(tokens) unless tokens[1]&.type == :EQUALS
 
-        raise "Equals what?" unless tokens[2..].size >= 1
+        err "Equals what?" unless tokens[2..].size >= 1
 
         AST::Node.new(:assign, nil, [
           AST::Node.new(:variable, tokens[0].value, []),
@@ -41,7 +41,7 @@ module Potato
       when :NUMBER   then AST::Node.new(:number, token.value, [])
       when :VARIABLE then AST::Node.new(:variable, token.value, [])
       when :STRING   then AST::Node.new(:string, token.value, [])
-      else raise "Unknown expression: #{token.type}"
+      else err "Unknown expression: #{token.type}"
       end
     end
 

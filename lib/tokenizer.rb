@@ -26,7 +26,7 @@ module Potato
         when /^".*"$/ then Token.new(:STRING, token[1..-2])
         when /^[a-zA-Z_]\w*$/ then Token.new(:VARIABLE, token)
         else
-          raise "Unknown token: #{token}"
+          err "Unknown token: #{token}"
         end
       end
     end

@@ -16,15 +16,24 @@ module Potato
 
         AST::Node.new(:print, nil, [parse_expression(tokens[1..])])
       when :VARIABLE
-        parse_expression(tokens) unless tokens[1]&.type == :EQUALS
+        if tokens[1]&.type == :EQUALS
+          err "Is what?" unless tokens[2..].size >= 1
 
-        err "Equals what?" unless tokens[2..].size >= 1
+          AST::Node.new(:assign, nil, [
+            AST::Node.new(:variable, tokens[0].value, []),
+            parse_expression(tokens[2..])
+          ])
+        elsif tokens[1]&.type == :ADD_EQUALS
+          err "Gains what?" unless tokens[2..].size >= 1
 
-        AST::Node.new(:assign, nil, [
-          AST::Node.new(:variable, tokens[0].value, []),
-          parse_expression(tokens[2..])
-        ])
- 
+          AST::Node.new(:plus_assign, nil, [
+            AST::Node.new(:variable, tokens[0].value, []),
+            parse_token(tokens[2])
+          ])
+        else
+          parse_expression(tokens) 
+        end
+
       when :COMMENT then nil
       else nil # unexecuted code
       end

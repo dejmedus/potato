@@ -13,58 +13,57 @@ module Potato
       case tokens[0]&.type
       when :PRINT
         raise "Say what?" unless tokens[1..].size >= 1
-        AST::Node.new(:print, nil, [ast_expression(tokens[1..])])
+
+        AST::Node.new(:print, nil, [parse_expression(tokens[1..])])
       when :VARIABLE
-        if tokens[1]&.type == :EQUALS
-          raise "Equals what?" unless tokens[2..].size >= 1
-          AST::Node.new(:assign, nil, [
-            AST::Node.new(:variable, tokens[0].value, []),
-            ast_expression(tokens[2..])
-          ])
-        else
-          ast_expression(tokens)
-        end
-      when :STRING
-        AST::Node.new(:string, tokens[0].value, [])
-      when :ADD
-        raise "More numbers please" unless tokens[1..].size >= 2
-        AST::Node.new(:add, nil, tokens[1..].map { |t| ast_expression([t]) })
-      when :COMMENT
-        nil
-      else
-        raise "Unknown statement: #{tokens[0].type}"
+        parse_expression(tokens) unless tokens[1]&.type == :EQUALS
+
+        raise "Equals what?" unless tokens[2..].size >= 1
+
+        AST::Node.new(:assign, nil, [
+          AST::Node.new(:variable, tokens[0].value, []),
+          parse_expression(tokens[2..])
+        ])
+ 
+      when :COMMENT then nil
+      else nil # unexecuted code
       end
     end
 
-    def self.ast_expression(tokens)
-      return nil if tokens.empty?
 
-      if tokens.size == 1
-        token = tokens.first
-        case token.type
-        when :NUMBER
-          return AST::Node.new(:number, token.value, [])
-        when :VARIABLE
-          return AST::Node.new(:variable, token.value, [])
-        when :STRING
-          return AST::Node.new(:string, token.value, [])
-        else
-          raise "Unknown expression: #{token.type}"
-        end
+    def self.parse_expression(tokens)
+      node, _ = parse_expr(tokens, 0, 0)
+      node
+    end
+
+    def self.parse_token(token)
+      case token.type
+      when :NUMBER   then AST::Node.new(:number, token.value, [])
+      when :VARIABLE then AST::Node.new(:variable, token.value, [])
+      when :STRING   then AST::Node.new(:string, token.value, [])
+      else raise "Unknown expression: #{token.type}"
+      end
+    end
+
+    def self.parse_expr(tokens, index, cur_precedence)
+      left = parse_token(tokens[index])
+      index += 1  # consume value
+
+      loop do
+        node_type = tokens[index]&.type
+        break unless node_type
+
+        precedence = { ADD: 10 }[node_type]
+        break unless precedence && precedence > cur_precedence
+
+        index += 1  # consume operator
+        right, index = parse_expr(tokens, index, precedence)
+        left = AST::Node.new(node_type.downcase.to_sym, nil, [left, right])
       end
 
-      add_index = tokens.find_index { |t| t.type == :ADD }
-      if add_index
-        left_tokens = tokens[0...add_index]
-        right_tokens = tokens[(add_index + 1)..]
-
-        left_node = ast_expression(left_tokens)
-        right_node = ast_expression(right_tokens)
-
-        AST::Node.new(:add, nil, [left_node, right_node])
-      else
-        ast_expression([tokens.first])
-      end
+      [left, index]
     end
   end
 end
+
+

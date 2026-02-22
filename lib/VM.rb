@@ -19,13 +19,14 @@ module PotatoVM
           byte = f.read(1).unpack1("C")
           case byte
           when 0x01 # number
-            value_bytes = f.read(4)     
+            value_bytes = f.read(4)
             value = value_bytes.unpack1("L>")
             stack.push(value)
           when 0x02 # add
-            number = stack.reduce(:+)
+            stack.map!(&:to_s) if stack.any? { |v| v.is_a?(String) }
+            value = stack.reduce(:+)
             stack.clear
-            stack.push(number)
+            stack.push(value)
           when 0x03 # print
             puts stack.pop
           when 0x04 # variable

@@ -5,9 +5,10 @@ require_relative "compiler"
 require_relative "vm"
 
 module Potato
-  def self.run_file(path)
+  def self.run_file(path, options = {})
     source = File.read(path)
     ast = Parser.parse(source)
+    AST::Tree.print(ast) if options[:ast]
     Compiler.compile(ast)
   end
 end

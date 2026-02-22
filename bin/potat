@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 require_relative '../lib/potato'
 
-Potato.run_file("./main.potato")
+options = { ast: ARGV.include?("--ast") }
+Potato.run_file("./main.potato", options)
 PotatoVM.run()

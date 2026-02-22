@@ -1,22 +1,29 @@
 module Potato
   module AST
-    Node = Struct.new(:type, :value, :children)
-  end
+    class Tree
+      def self.print(ast)
+        ast.each { |node| node.pretty_print }
+      end
+    end
 
-  class PrintAST
-    def self.print(node, indent = 0)
-      prefix = "  " * indent
-      case node.type
-      when :print
-        puts "#{prefix}Print"
-        node.children.each { |child| print(child, indent + 1) }
-      when :add
-        puts "#{prefix}Add"
-        node.children.each { |child| print(child, indent + 1) }
-      when :number
-        puts "#{prefix}Number(#{node.value})"
-      else
-        puts "#{prefix}#{node.type}(#{node.value})"
+    class Node
+      attr_reader :type, :value, :children
+
+      def initialize(type, value = nil, children = [])
+        @type = type
+        @value = value
+        @children = children
+      end
+
+      def pretty_print(indent = 0, prefix = "", is_last = true)
+        connector = indent == 0 ? "" : is_last ? "└── " : "├── "
+        label = value ? "#{type.to_s.upcase} #{value}" : type.to_s.upcase
+        puts "#{prefix}#{connector}#{label}"
+
+        child_prefix = prefix + (indent == 0 ? "" : is_last ? "    " : "│   ")
+        children.each_with_index do |child, i|
+          child.pretty_print(indent + 1, child_prefix, i == children.size - 1)
+        end
       end
     end
   end

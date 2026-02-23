@@ -29,6 +29,8 @@ module Potato
         when "equals?"  then result << Token.new(:EQUALS_EQUALS, nil)
         when /^\d+$/  then result << Token.new(:NUMBER, token.to_i)
         when /^".*"$/ then result << Token.new(:STRING, token[1..-2])
+        when ":(" then result << Token.new(:BOOLEAN, token)
+        when ":)" then result << Token.new(:BOOLEAN, token)
         when /^[a-zA-Z_]\w*$/ then result << Token.new(:VARIABLE, token)
         else err "Unknown token: #{token}"
         end

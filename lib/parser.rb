@@ -50,6 +50,7 @@ module Potato
       when :NUMBER   then AST::Node.new(:number, token.value, [])
       when :VARIABLE then AST::Node.new(:variable, token.value, [])
       when :STRING   then AST::Node.new(:string, token.value, [])
+      when :BOOLEAN  then AST::Node.new(:boolean, token.value == ":)" ? true : false, [])
       else err "Unknown expression: #{token.type}", line
       end
     end

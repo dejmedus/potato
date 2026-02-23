@@ -38,6 +38,10 @@ class Compiler
     when :add
       node.children.each { |child| ir(child, f) }
       f.write([0x02].pack("C"))
+    
+    when :boolean
+      f.write([0x08].pack("C"))
+      f.write([node.value ? 1 : 0].pack("L>"))
 
     when :print
       node.children.each { |child| ir(child, f) }

@@ -47,6 +47,10 @@ module PotatoVM
             right = stack.pop
             left = stack.pop
             stack.push(left == right)
+          when 0x08 # boolean
+            value_bytes = f.read(4)
+            value = value_bytes.unpack1("L>") == 1
+            stack.push(value)
           end
         end
       end

@@ -21,6 +21,6 @@ module PotatoVM
   end
 end
 
-def err(msg)
-  abort "\e[31m#{msg}\e[0m"
+def err(msg, line_num = "?")
+  abort "L#{line_num} \e[31m#{msg}\e[0m"
 end

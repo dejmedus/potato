@@ -1,30 +1,30 @@
 module Potato
   class Parser
     def self.parse(source)
-      source.lines.each_with_object([]) do |line, nodes|
+      source.lines.each_with_index.with_object([]) do |(line, index), nodes|
         tokens = Tokenizer.tokenize(line)
         next if tokens.empty?
-        node = ast(tokens)
+        node = ast(tokens, index + 1)
         nodes << node if node
       end
     end
 
-    def self.ast(tokens)
+    def self.ast(tokens, line)
       case tokens[0]&.type
       when :PRINT
-        err "Say what?" unless tokens[1..].size >= 1
+        err "Say what?", line unless tokens[1..].size >= 1
 
         AST::Node.new(:print, nil, [parse_expression(tokens[1..])])
       when :VARIABLE
         if tokens[1]&.type == :EQUALS
-          err "Is what?" unless tokens[2..].size >= 1
+          err "#{tokens[0].value} is what?", line unless tokens[2..].size >= 1
 
           AST::Node.new(:assign, nil, [
             AST::Node.new(:variable, tokens[0].value, []),
             parse_expression(tokens[2..])
           ])
         elsif tokens[1]&.type == :ADD_EQUALS
-          err "Gains what?" unless tokens[2..].size >= 1
+          err "#{tokens[0].value} gains what?", line unless tokens[2..].size >= 1
 
           AST::Node.new(:add_assign, nil, [
             AST::Node.new(:variable, tokens[0].value, []),
@@ -50,7 +50,7 @@ module Potato
       when :NUMBER   then AST::Node.new(:number, token.value, [])
       when :VARIABLE then AST::Node.new(:variable, token.value, [])
       when :STRING   then AST::Node.new(:string, token.value, [])
-      else err "Unknown expression: #{token.type}"
+      else err "Unknown expression: #{token.type}", line
       end
     end
 

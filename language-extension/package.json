@@ -76,27 +76,41 @@
             }
           },
           {
-            "scope": "keyword.other.say.potato",
-            "settings": {
-              "foreground": "#666666"
-            }
-          },
-          {
             "scope": "comment.line.potato",
             "settings": {
               "foreground": "#aaaaaa"
             }
           },
           {
-            "scope": "keyword.operator.is.potato",
+            "scope": [
+              "keyword.other.say.potato",
+              "keyword.operator.is.potato",
+              "keyword.operator.equals.potato",
+              "keyword.operator.gains.potato"
+            ],
             "settings": {
-              "foreground": "#606060"
+              "foreground": "#686868"
             }
           },
           {
-            "scope": "constant.numeric.potato",
+            "scope": [
+              "constant.numeric.potato",
+              "string.quoted.double.potato"
+            ],
             "settings": {
-              "foreground": "#606060"
+              "foreground": "#4d4d4d"
+            }
+          },
+          {
+            "scope": "keyword.operator.true.potato",
+            "settings": {
+              "foreground": "#aa8dff"
+            }
+          },
+          {
+            "scope": "keyword.operator.false.potato",
+            "settings": {
+              "foreground": "#6bceff"
             }
           }
         ]

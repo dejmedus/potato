@@ -6,7 +6,7 @@ module Potato
 
     def self.desugar_node(node)
       case node.type
-      when :plus_assign
+      when :add_assign
         var = node.children[0]
         value = node.children[1]
 

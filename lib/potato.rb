@@ -10,7 +10,7 @@ module Potato
     source = File.read(path)
     ast = Parser.parse(source)
     ast = Desugar.desugar(ast)
-    AST::Tree.print(ast) if options[:ast]
+    AST::Printer.print(ast) if options[:ast]
     Compiler.compile(ast)
   end
 end

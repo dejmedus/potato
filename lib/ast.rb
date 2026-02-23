@@ -1,6 +1,6 @@
 module Potato
   module AST
-    class Tree
+    class Printer
       def self.print(ast)
         ast.each { |node| node.pretty_print }
       end

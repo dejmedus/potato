@@ -26,7 +26,7 @@ module Potato
         elsif tokens[1]&.type == :ADD_EQUALS
           err "Gains what?" unless tokens[2..].size >= 1
 
-          AST::Node.new(:plus_assign, nil, [
+          AST::Node.new(:add_assign, nil, [
             AST::Node.new(:variable, tokens[0].value, []),
             parse_token(tokens[2])
           ])
@@ -74,5 +74,3 @@ module Potato
     end
   end
 end
-
-

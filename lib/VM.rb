@@ -43,6 +43,10 @@ module PotatoVM
             length = length_bytes.unpack1("L>")
             value = f.read(length)
             stack.push(value)
+          when 0x07 # == operator
+            right = stack.pop
+            left = stack.pop
+            stack.push(left == right)
           end
         end
       end

@@ -33,7 +33,7 @@ module Potato
         else
           parse_expression(tokens) 
         end
-
+        
       when :COMMENT then nil
       else nil # unexecuted code
       end
@@ -62,7 +62,7 @@ module Potato
         node_type = tokens[index]&.type
         break unless node_type
 
-        precedence = { ADD: 10 }[node_type]
+        precedence = { ADD: 10, EQUALS_EQUALS: 5  }[node_type]
         break unless precedence && precedence > cur_precedence
 
         index += 1  # consume operator

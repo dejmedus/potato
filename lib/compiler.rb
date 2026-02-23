@@ -57,6 +57,10 @@ class Compiler
 
       f.write([0x05].pack("C"))       
       f.write([index].pack("L>"))
+
+    when :equals_equals
+      node.children.each { |child| ir(child, f) }
+      f.write([0x07].pack("C"))
     end
   end
 

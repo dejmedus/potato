@@ -2,6 +2,7 @@ require_relative "tokenizer"
 require_relative "ast"
 require_relative "parser"
 require_relative "desugar"
+require_relative "analysis"
 require_relative "compiler"
 require_relative "vm"
 
@@ -11,7 +12,9 @@ module Potato
     ast = Parser.parse(source)
     ast = Desugar.desugar(ast)
     AST::Printer.print(ast) if options[:ast]
-    Compiler.compile(ast)
+    scope = Analysis.analyze(ast)
+    scope.pretty_print if options[:scope]
+    # Compiler.compile(ast)
   end
 end
 

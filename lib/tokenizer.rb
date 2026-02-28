@@ -14,19 +14,22 @@ module Potato
 
   class Tokenizer
     def self.tokenize(line)
-      tokens = line.scan(/"(?:\\.|[^"])*"|[^\s]+/).reject(&:empty?)
+      lexemes = line.scan(/"(?:\\.|[^"])*"|:\)|:\(|[(),]|[^\s(),]+/).reject(&:empty?)
       
       result = []
-      tokens.each_with_index do |token, index|
+      lexemes.each_with_index do |token, index|
         case token.downcase
         when "🍠"
-          result << Token.new(:COMMENT, tokens[index..])
+          result << Token.new(:COMMENT, lexemes[index..])
           break
         when "say"   then result << Token.new(:PRINT, nil)
         when "potato" then result << Token.new(:ADD, nil)
         when "is"     then result << Token.new(:EQUALS, nil)
+        when "(" then result << Token.new(:LPAREN, nil)
+        when ")" then result << Token.new(:RPAREN, nil)
         when "gains"  then result << Token.new(:ADD_EQUALS, nil)
         when "equals?"  then result << Token.new(:EQUALS_EQUALS, nil)
+        when ","  then result << Token.new(:SEPARATOR, nil)
         when /^\d+$/  then result << Token.new(:NUMBER, token.to_i)
         when /^".*"$/ then result << Token.new(:STRING, token[1..-2])
         when ":(" then result << Token.new(:BOOLEAN, token)

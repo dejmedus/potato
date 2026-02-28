@@ -9,6 +9,7 @@
   "categories": [
     "Programming Languages"
   ],
+  "repository": "github.com/dejmedus/potato",
   "contributes": {
     "languages": [
       {

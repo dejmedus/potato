@@ -9,18 +9,18 @@ module Potato
       end
     end
 
-    def self.ast(tokens, line)
+    def self.ast(tokens, l)
       case tokens[0]&.type
       when :PRINT
-        err "Say what?", line unless tokens[1..].size >= 1
-        AST::Node.new(:print, nil, [parse_expression(tokens[1..])])
+        err "Say what?", l unless tokens[1..].size >= 1
+        AST::Node.new(:print, nil, [parse_expression(tokens[1..], l)], l)
 
       when :VARIABLE
         head_value = tokens[0].value
         case tokens[1]&.type
         when :LPAREN
           close = tokens.index { |t| t.type == :RPAREN }
-          err "Expected )", line unless close
+          err "Expected )", l unless close
 
           param_tokens = tokens[2...close]
           body_tokens = tokens[close+1..]
@@ -31,30 +31,30 @@ module Potato
 
             AST::Node.new(:function, head_value, [
               AST::Node.new(:params, nil, params.map { |p| AST::Node.new(:param, p, []) }),
-              AST::Node.new(:body, nil, statements.map { |s| ast(s, line) })
-            ])
+              AST::Node.new(:body, nil, statements.map { |s| ast(s, l) })
+            ], l)
           else
             args = param_tokens.reject { |t| t.type == :SEPARATOR }
             AST::Node.new(:func_call, head_value,
-              args.map { |t| parse_token(t) }
+              args.map { |t| parse_token(t, l) }
             )
           end
 
         when :EQUALS
-          err "#{head_value} is what?", line unless tokens[2..].size >= 1
+          err "#{head_value} is what?", l unless tokens[2..].size >= 1
 
           AST::Node.new(:assign, nil, [
-            AST::Node.new(:variable, head_value, []),
-            parse_expression(tokens[2..])
-          ])
+            AST::Node.new(:variable, head_value, [], l),
+            parse_expression(tokens[2..], l)
+          ], l)
 
         when :ADD_EQUALS
-          err "#{head_value} gains what?", line unless tokens[2..].size >= 1
+          err "#{head_value} gains what?", l unless tokens[2..].size >= 1
           
           AST::Node.new(:add_assign, nil, [
-            AST::Node.new(:variable, head_value, []),
-            parse_token(tokens[2])
-          ])
+            AST::Node.new(:variable, head_value, [], l),
+            parse_token(tokens[2], l)
+          ], l)
 
         else
           parse_expression(tokens)
@@ -70,23 +70,23 @@ module Potato
             .map { |group| group.reject { |t| t.type == :SEPARATOR } }
     end
 
-    def self.parse_expression(tokens)
-      node, _ = parse_expr(tokens, 0, 0)
+    def self.parse_expression(tokens, l = nil)
+      node, _ = parse_expr(tokens, 0, 0, l)
       node
     end
 
-    def self.parse_token(token)
+    def self.parse_token(token, l = nil)
       case token.type
       when :NUMBER   then AST::Node.new(:number, token.value, [])
-      when :VARIABLE then AST::Node.new(:variable, token.value, [])
+      when :VARIABLE then AST::Node.new(:variable, token.value, [], l)
       when :STRING   then AST::Node.new(:string, token.value, [])
       when :BOOLEAN  then AST::Node.new(:boolean, token.value == ":)", [])
       else err "Unknown expression: #{token.type}"
       end
     end
 
-    def self.parse_expr(tokens, index, cur_precedence)
-      left = parse_token(tokens[index])
+    def self.parse_expr(tokens, index, cur_precedence, l = nil)
+      left = parse_token(tokens[index], l)
       index += 1  # consume value
 
       loop do
@@ -97,7 +97,7 @@ module Potato
         break unless precedence && precedence > cur_precedence
 
         index += 1  # consume operator
-        right, index = parse_expr(tokens, index, precedence)
+        right, index = parse_expr(tokens, index, precedence, l)
         left = AST::Node.new(node_type.downcase.to_sym, nil, [left, right])
       end
 

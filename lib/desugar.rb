@@ -13,12 +13,13 @@ module Potato
         AST::Node.new(:assign, nil, [
           var,
           AST::Node.new(:add, nil, [var, value])
-        ])
+        ], node.line)
       else
         AST::Node.new(
           node.type,
           node.value,
-          node.children.map { |c| desugar_node(c) }
+          node.children.map { |c| desugar_node(c) },
+          node.line
         )
       end
     end

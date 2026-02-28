@@ -84,7 +84,7 @@ module Potato
           scope = scope.parent
         end
         
-        err "Undefined variable: #{var_name}" if scope.nil?
+        err "Undefined variable: #{var_name}", node.line if scope.nil?
 
       else         
         node.children.each { |c| analyze_node(c) }

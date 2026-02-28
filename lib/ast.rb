@@ -7,12 +7,13 @@ module Potato
     end
 
     class Node
-      attr_reader :type, :value, :children
+      attr_reader :type, :value, :children, :line
 
-      def initialize(type, value = nil, children = [])
+      def initialize(type, value = nil, children = [], line = nil)
         @type = type
         @value = value
         @children = children
+        @line = line
       end
 
       def pretty_print(indent = 0, prefix = "", is_last = true)

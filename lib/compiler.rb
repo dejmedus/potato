@@ -50,7 +50,7 @@ module Potato
 
       when :variable
         index = @symbol_table[node.value]
-        err "Unknown variable: #{node.value}" unless index
+        err "Unknown variable: #{node.value}", node.line unless index
         f.write([0x04].pack("C"))
         f.write([index].pack("L>"))
 

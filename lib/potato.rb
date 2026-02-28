@@ -14,7 +14,6 @@ module Potato
     AST::Printer.print(ast) if options[:ast]
     scope = Analysis.analyze(ast)
     scope.pretty_print if options[:scope]
-    # Compiler.compile(ast)
   end
 end
 
@@ -27,3 +26,4 @@ end
 def err(msg, line_num = "?")
   abort "L#{line_num} \e[31m#{msg}\e[0m"
 end
+

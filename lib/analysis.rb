@@ -2,7 +2,7 @@ module Potato
   class Scope
     attr_reader :parent, :children, :symbol_table, :name
 
-    def initialize(name, parent: nil) 
+    def initialize(name, parent: nil)
       @parent = parent
       @children = []
       @symbol_table = {}
@@ -11,7 +11,15 @@ module Potato
 
     def add_to_scope(name)
       return if symbol_table.key?(name)
-      symbol_table[name] = symbol_table.size
+      symbol_table[name] = next_free_index
+    end
+
+    def next_free_index
+      symbol_table.size
+    end
+
+    def find_var(name)
+      self.symbol_table.key?(name)
     end
 
     def pretty_print(indent = 0, prefix = "", is_last = true)
@@ -55,10 +63,10 @@ module Potato
           @cur_scope = new_scope
 
           params_node = node.children[0]
-          body_node   = node.children[1]
+          body_node = node.children[1]
 
           params_node.children.each { |p| @cur_scope.add_to_scope(p.value) }
-          body_node.children.each   { |s| analyze_node(s) }
+          body_node.children.each { |s| analyze_node(s) }
 
           @cur_scope = @cur_scope.parent
 
@@ -72,7 +80,7 @@ module Potato
         scope = @cur_scope
 
         until scope.nil?
-          break if scope.symbol_table.key?(var_name)
+          break if scope.find_var(var_name)
           scope = scope.parent
         end
         

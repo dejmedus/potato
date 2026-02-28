@@ -84,6 +84,17 @@
           },
           {
             "scope": [
+              "keyword.operator.paren.begin.potato",
+              "keyword.operator.paren.end.potato",
+              "keyword.operator.paren.potato"
+            ],
+            "settings": {
+              "foreground": "#383838",
+              "fontStyle": "bold"
+            }
+          },
+          {
+            "scope": [
               "keyword.other.say.potato",
               "keyword.operator.is.potato",
               "keyword.operator.equals.potato",

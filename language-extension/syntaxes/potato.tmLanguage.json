@@ -11,6 +11,7 @@
     { "include": "#gains" },
     { "include": "#true" },
     { "include": "#false" },
+    { "include": "#parenthesis" },
     { "include": "#comment" },
     { "include": "#potato_rainbow" }
   ],
@@ -76,6 +77,27 @@
         {
           "name": "keyword.operator.false.potato",
           "match": ":\\("
+        }
+      ]
+    },
+    "parenthesis": {
+      "patterns": [
+        {
+          "name": "meta.parameters.potato",
+          "begin": "(?<!:)\\(",
+          "end": "(?<!:)\\)",
+          "beginCaptures": {
+            "0": { "name": "keyword.operator.paren.begin.potato" }
+          },
+          "endCaptures": {
+            "0": { "name": "keyword.operator.paren.end.potato" }
+          },
+          "patterns": [
+            { "include": "#strings" },
+            { "include": "#numbers" },
+            { "include": "#true" },
+            { "include": "#false" }
+          ]
         }
       ]
     },

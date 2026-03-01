@@ -3,6 +3,7 @@ require_relative "ast"
 require_relative "parser"
 require_relative "desugar"
 require_relative "analysis"
+require_relative "lowering"
 require_relative "compiler"
 require_relative "vm"
 
@@ -14,6 +15,8 @@ module Potato
     AST::Printer.print(ast) if options[:ast]
     scope = Analysis.analyze(ast)
     scope.pretty_print if options[:scope]
+    ir, func_table = Lowering.lower(ast, scope)
+    Compiler.compile(ast, scope, ir, func_table, print: options[:ir])
   end
 end
 

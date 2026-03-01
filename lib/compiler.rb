@@ -1,88 +1,77 @@
 module Potato
   class Compiler
-    @symbol_table = {}
-
-    def self.compile(ast)
-      create_symbol_table(ast)
+    def self.compile(ast, scope, ir, function_table, print: false)
+      if print
+        ir.each_with_index { |instruction, i| puts "  #{i}: #{instruction.inspect}" }
+        function_table.each { |name, index| puts "  #{name} #{index}" }
+      end
 
       File.open("potat.o", "wb") do |f|
-        write_symbol_table(f)
-        write_ir(ast, f)
+        write_symbol_table(scope.symbol_table, f)
+        write_function_table(function_table, f)
+        write_ir(ir, f)
       end
     end
 
-    def self.write_ir(ast, f)
-      ast.each { |node| ir(node, f) }
+    def self.write_ir(ir, f)
+      ir.each { |instruction| ir(instruction, f) }
     end
 
-    def self.write_symbol_table(f)
-      f.write([@symbol_table.size].pack("L>"))
+    def self.write_function_table(function_table, f)
+      f.write([function_table.size].pack("L>"))
 
-      @symbol_table.each do |var, index|
+      function_table.each do |var, index|
         f.write([var.bytesize].pack("C"))
         f.write(var)
         f.write([index].pack("L>"))
       end
     end
 
-    def self.ir(node, f)
-      case node.type
-      when :number
-        f.write([0x01].pack("C"))
-        f.write([node.value].pack("L>"))
+    def self.write_symbol_table(symbol_table, f)
+      f.write([symbol_table.size].pack("L>"))
 
-      when :string
-        f.write([0x06].pack("C"))
-        f.write([node.value.bytesize].pack("L>"))
-        f.write(node.value)
+      symbol_table.each do |var, index|
+        f.write([var.bytesize].pack("C"))
+        f.write(var)
+        f.write([index].pack("L>"))
+      end
+    end
 
-      when :add
-        node.children.each { |child| ir(child, f) }
-        f.write([0x02].pack("C"))
-      
-      when :boolean
-        f.write([0x08].pack("C"))
-        f.write([node.value ? 1 : 0].pack("L>"))
-
-      when :print
-        node.children.each { |child| ir(child, f) }
-        f.write([0x03].pack("C"))
-
-      when :variable
-        index = @symbol_table[node.value]
-        err "Unknown variable: #{node.value}", node.line unless index
+    def self.ir(instruction, f)
+      case instruction
+      when IR::Push
+        case instruction.value
+        when Integer
+          f.write([0x01].pack("C"))
+          f.write([instruction.value].pack("L>"))
+        when String
+          f.write([0x06].pack("C"))
+          f.write([instruction.value.bytesize].pack("L>"))
+          f.write(instruction.value)
+        when TrueClass, FalseClass
+          f.write([0x08].pack("C"))
+          f.write([instruction.value ? 1 : 0].pack("L>"))
+        end
+      when IR::LoadVar
         f.write([0x04].pack("C"))
-        f.write([index].pack("L>"))
-
-      when :assign
-        ir(node.children[1], f)
-
-        var_name = node.children[0].value
-        index = @symbol_table[var_name]
-
-        f.write([0x05].pack("C"))       
-        f.write([index].pack("L>"))
-
-      when :equals_equals
-        node.children.each { |child| ir(child, f) }
+        f.write([instruction.index].pack("L>"))
+      when IR::StoreVar
+        f.write([0x05].pack("C"))
+        f.write([instruction.index].pack("L>"))
+      when IR::Add
+        f.write([0x02].pack("C"))
+      when IR::Equality
         f.write([0x07].pack("C"))
+      when IR::Print
+        f.write([0x03].pack("C"))
+      when IR::Call
+        f.write([0x09].pack("C"))
+        f.write([instruction.name.bytesize].pack("C"))
+        f.write(instruction.name)
+        f.write([instruction.arg_count].pack("L>"))
+      when IR::Return
+        f.write([0x0A].pack("C"))
       end
-    end
-
-    def self.create_symbol_table(ast)
-      for node in ast
-        collect_symbols(node)
-      end
-    end
-
-    def self.collect_symbols(node)
-      case node.type
-      when :assign
-        var = node.children[0].value
-        @symbol_table[var] ||= @symbol_table.size
-      end
-
-      node.children.each { |child| collect_symbols(child) }
     end
   end
 end

@@ -57,7 +57,7 @@ module Potato
           ], l)
 
         else
-          parse_expression(tokens)
+          parse_expression(tokens, l)
         end
 
       when :COMMENT then nil

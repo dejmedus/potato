@@ -19,7 +19,7 @@ module Potato
     end
 
     def find_var(name)
-      self.symbol_table.key?(name)
+      symbol_table[name]
     end
 
     def pretty_print(indent = 0, prefix = "", is_last = true)
@@ -57,18 +57,18 @@ module Potato
     def analyze_node(node)
       case node.type
       when :function 
-          @cur_scope.add_to_scope(node.value)
-          new_scope = Scope.new("local:#{node.value}", parent: @cur_scope)
-          @cur_scope.children << new_scope
-          @cur_scope = new_scope
+        @cur_scope.add_to_scope(node.value)
+        new_scope = Scope.new("local:#{node.value}", parent: @cur_scope)
+        @cur_scope.children << new_scope
+        @cur_scope = new_scope
 
-          params_node = node.children[0]
-          body_node = node.children[1]
+        params_node = node.children[0]
+        body_node = node.children[1]
 
-          params_node.children.each { |p| @cur_scope.add_to_scope(p.value) }
-          body_node.children.each { |s| analyze_node(s) }
+        params_node.children.each { |p| @cur_scope.add_to_scope(p.value) }
+        body_node.children.each { |s| analyze_node(s) }
 
-          @cur_scope = @cur_scope.parent
+        @cur_scope = @cur_scope.parent
 
       when :assign
         var_name = node.children[0].value
@@ -76,15 +76,9 @@ module Potato
         analyze_node(node.children[1])
 
       when :variable 
-        var_name = node.value
-        scope = @cur_scope
-
-        until scope.nil?
-          break if scope.find_var(var_name)
-          scope = scope.parent
+        if @cur_scope.find_var(node.value).nil?
+          err "Undefined variable: #{node.value}", node.line
         end
-        
-        err "Undefined variable: #{var_name}", node.line if scope.nil?
 
       else         
         node.children.each { |c| analyze_node(c) }

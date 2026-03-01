@@ -17,14 +17,26 @@ module Potato
       @global_scope = scope
       @cur_scope = scope
       @instructions = []
+      @byte_offset = 0
     end
 
     def self.lower(ast, scope)
       new(scope).lower(ast)
     end
 
-    def next_free_index
-      @instructions.size
+    def write(instruction)
+      @instructions << instruction
+      @byte_offset += case instruction
+
+      when IR::Push then instruction.value.is_a?(String) ? 5 + instruction.value.bytesize : 5
+      when IR::Call then 9
+      when IR::Add, IR::Print, IR::Equality, IR::Return then 1
+      else 5
+      end
+    end
+
+    def next_free_byte
+      @byte_offset
     end
 
     def lower(ast)
@@ -33,19 +45,19 @@ module Potato
     end
 
     def func_ir(node)
-      jump_index = next_free_index
-      @instructions << IR::Jump.new(nil)
+      jump_index = @instructions.size
+      write IR::Jump.new(nil)
 
-      sym = @cur_scope.find_var(node.value)
-      sym.instruction_index = next_free_index
+      func = @cur_scope.find_var(node.value)
+      func.instruction_index = next_free_byte
 
       @cur_scope = @cur_scope.children.find { |c| c.name == node.value }
 
       body_node = node.children[1]
       body_node.children.each { |s| ir(s) }
 
-      @instructions << IR::Return.new
-      @instructions[jump_index].target = next_free_index
+      write IR::Return.new
+      @instructions[jump_index].target = next_free_byte
       @cur_scope = @cur_scope.parent
     end
 
@@ -54,33 +66,36 @@ module Potato
       when :function
         func_ir(node)
 
-      when :number, :string, :boolean
-        @instructions << IR::Push.new(node.value)
+      when :number, :boolean
+        write IR::Push.new(node.value)
+
+      when :string
+        write IR::Push.new(node.value)
 
       when :add
         node.children.each { |child| ir(child) }
-        @instructions << IR::Add.new
+        write IR::Add.new
 
       when :print
         node.children.each { |child| ir(child) }
-        @instructions << IR::Print.new
+        write IR::Print.new
 
       when :variable
-        @instructions <<  IR::LoadVar.new(@cur_scope.find_var(node.value).index)
+        write IR::LoadVar.new(@cur_scope.find_var(node.value).index)
 
       when :assign
         ir(node.children[1])
         var_name = node.children[0].value
         index = @cur_scope.find_var(var_name)&.index
-        @instructions << IR::StoreVar.new(index)
+        write IR::StoreVar.new(index)
 
       when :func_call
         node.children.each { |child| ir(child) }
-        @instructions << IR::Call.new(@cur_scope.find_var(node.value).instruction_index, node.children.size)
+        write IR::Call.new(@cur_scope.find_var(node.value).instruction_index, node.children.size)
 
       when :equals_equals
         node.children.each { |child| ir(child) }
-        @instructions << IR::Equality.new
+        write IR::Equality.new
       end
     end
   end

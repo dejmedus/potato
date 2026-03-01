@@ -14,9 +14,9 @@ module Potato
       ir.each { |instruction| ir(instruction, f) }
     end
 
-    def self.write(f, opcode, value = 0)
+    def self.write(f, opcode, value = nil)
       f.write([opcode].pack("C"))
-      f.write([value].pack("L>"))
+      f.write([value].pack("L>")) if value
     end
 
     def self.ir(instruction, f)
@@ -42,14 +42,12 @@ module Potato
       when IR::Print
         write(f, 0x03)
       when IR::Call
-        write(f, 0x09)
-        write(f, instruction.target)
-        write(f, instruction.arg_count)
+        write(f, 0x09, instruction.target)
+        f.write([instruction.arg_count].pack("L>")) 
       when IR::Return
         write(f, 0x0A)
       when IR::Jump
-        write(f, 0x0B)
-        write(f, instruction.target)
+        write(f, 0x0B, instruction.target)
       end
     end
   end

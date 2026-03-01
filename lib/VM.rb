@@ -22,7 +22,7 @@ module PotatoVM
         when 0x01 # number
           stack.push(read)
         when 0x02 # add
-          stack.map!(&:to_s) if stack.any? { |v| v.is_a?(String) }
+          stack.map!(&:to_s) if !stack.all? { |v| v.is_a?(Numeric) }
           value = stack.reduce(:+)
           stack.clear
           stack.push(value)

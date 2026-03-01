@@ -14,42 +14,42 @@ module Potato
       ir.each { |instruction| ir(instruction, f) }
     end
 
+    def self.write(f, opcode, value = 0)
+      f.write([opcode].pack("C"))
+      f.write([value].pack("L>"))
+    end
+
     def self.ir(instruction, f)
       case instruction
       when IR::Push
         case instruction.value
         when Integer
-          f.write([0x01].pack("C"))
-          f.write([instruction.value].pack("L>"))
+          write(f, 0x01, instruction.value)
         when String
-          f.write([0x06].pack("C"))
-          f.write([instruction.value.bytesize].pack("L>"))
+          write(f, 0x06, instruction.value.bytesize)
           f.write(instruction.value)
         when TrueClass, FalseClass
-          f.write([0x08].pack("C"))
-          f.write([instruction.value ? 1 : 0].pack("L>"))
+          write(f, 0x08, instruction.value ? 1 : 0)
         end
       when IR::LoadVar
-        f.write([0x04].pack("C"))
-        f.write([instruction.index].pack("L>"))
+        write(f, 0x04, instruction.index)
       when IR::StoreVar
-        f.write([0x05].pack("C"))
-        f.write([instruction.index].pack("L>"))
+        write(f, 0x05, instruction.index)
       when IR::Add
-        f.write([0x02].pack("C"))
+        write(f, 0x02)
       when IR::Equality
-        f.write([0x07].pack("C"))
+        write(f, 0x07)
       when IR::Print
-        f.write([0x03].pack("C"))
+        write(f, 0x03)
       when IR::Call
-        f.write([0x09].pack("C"))
-        f.write([instruction.target].pack("L>"))
-        f.write([instruction.arg_count].pack("L>"))
+        write(f, 0x09)
+        write(f, instruction.target)
+        write(f, instruction.arg_count)
       when IR::Return
-        f.write([0x0A].pack("C"))
+        write(f, 0x0A)
       when IR::Jump
-        f.write([0x0B].pack("C"))
-        f.write([instruction.target].pack("L>"))
+        write(f, 0x0B)
+        write(f, instruction.target)
       end
     end
   end

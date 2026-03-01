@@ -41,11 +41,6 @@ module Potato
 
       @cur_scope = @cur_scope.children.find { |c| c.name == node.value }
 
-      params_node = node.children[0]
-      params_node.children.each { |p|
-        @instructions << IR::StoreVar.new(@cur_scope.find_var(p.value).index)
-      }
-
       body_node = node.children[1]
       body_node.children.each { |s| ir(s) }
 

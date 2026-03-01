@@ -11,6 +11,7 @@ module PotatoVM
       @pos = 0
 
       stack = []
+      scopes = []
       locals = Array.new(100)
 
       until @pos >= @bytecode.size
@@ -47,6 +48,20 @@ module PotatoVM
         when 0x08 # boolean
           value = read
           stack.push(value == 1)
+        when 0x09 # call
+          target = read
+          arg_count = read
+          scopes.push({ locals: locals, call_site: @pos })
+          locals = Array.new(100)
+          args = stack.pop(arg_count).reverse
+          args.each_with_index { |arg, i| locals[i] = arg }
+          @pos = target
+        when 0x0A # return
+          scope = scopes.pop
+          locals = scope[:locals]
+          @pos = scope[:call_site]
+        when 0x0B # jump
+          @pos = read
         end
       end
     end

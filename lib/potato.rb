@@ -22,7 +22,7 @@ end
 
 module PotatoVM
   def self.run
-    # VM.run
+    VM.run
   end
 end
 

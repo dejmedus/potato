@@ -1,40 +1,17 @@
 module Potato
   class Compiler
-    def self.compile(ast, scope, ir, function_table, print: false)
-      if print
-        ir.each_with_index { |instruction, i| puts "  #{i}: #{instruction.inspect}" }
-        function_table.each { |name, index| puts "  #{name} #{index}" }
-      end
+    def self.compile(scope, ir, print: false)
+    if print
+      ir.each_with_index { |instruction, i| puts "  #{i}: #{instruction.inspect}" }
+    end
 
       File.open("potat.o", "wb") do |f|
-        write_symbol_table(scope.symbol_table, f)
-        write_function_table(function_table, f)
         write_ir(ir, f)
       end
     end
 
     def self.write_ir(ir, f)
       ir.each { |instruction| ir(instruction, f) }
-    end
-
-    def self.write_function_table(function_table, f)
-      f.write([function_table.size].pack("L>"))
-
-      function_table.each do |var, index|
-        f.write([var.bytesize].pack("C"))
-        f.write(var)
-        f.write([index].pack("L>"))
-      end
-    end
-
-    def self.write_symbol_table(symbol_table, f)
-      f.write([symbol_table.size].pack("L>"))
-
-      symbol_table.each do |var, index|
-        f.write([var.bytesize].pack("C"))
-        f.write(var)
-        f.write([index].pack("L>"))
-      end
     end
 
     def self.ir(instruction, f)
@@ -66,11 +43,13 @@ module Potato
         f.write([0x03].pack("C"))
       when IR::Call
         f.write([0x09].pack("C"))
-        f.write([instruction.name.bytesize].pack("C"))
-        f.write(instruction.name)
+        f.write([instruction.target].pack("L>"))
         f.write([instruction.arg_count].pack("L>"))
       when IR::Return
         f.write([0x0A].pack("C"))
+      when IR::Jump
+        f.write([0x0B].pack("C"))
+        f.write([instruction.target].pack("L>"))
       end
     end
   end

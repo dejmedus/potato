@@ -14,15 +14,15 @@ module Potato
     ast = Desugar.desugar(ast)
     AST::Printer.print(ast) if options[:ast]
     scope = Analysis.analyze(ast)
-    scope.pretty_print if options[:scope]
-    ir, func_table = Lowering.lower(ast, scope)
-    Compiler.compile(ast, scope, ir, func_table, print: options[:ir])
+    scope.print if options[:scope]
+    ir = Lowering.lower(ast, scope)
+    Compiler.compile(scope, ir, print: options[:ir])
   end
 end
 
 module PotatoVM
   def self.run
-    VM.run
+    # VM.run
   end
 end
 

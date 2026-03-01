@@ -7,8 +7,9 @@ module Potato
     Add = Struct.new
     Equality = Struct.new
     Print = Struct.new
-    Call = Struct.new(:name, :arg_count)
+    Call = Struct.new(:target, :arg_count)
     Return = Struct.new
+    Jump = Struct.new(:target)
   end
 
   class Lowering
@@ -16,8 +17,6 @@ module Potato
       @global_scope = scope
       @cur_scope = scope
       @instructions = []
-      @function_table = {}
-      @func_defs = []
     end
 
     def self.lower(ast, scope)
@@ -29,30 +28,37 @@ module Potato
     end
 
     def lower(ast)
-      ast.each { |node| node.type == :function ? @func_defs << node : ir(node) }
-      @func_defs.each { |fn| func_ir(fn) }
-      [@instructions, @function_table]
+      ast.each { |node| ir(node) }
+      @instructions
     end
 
     def func_ir(node)
-      @function_table[node.value] = next_free_index
+      jump_index = next_free_index
+      @instructions << IR::Jump.new(nil)
 
-      @cur_scope = @cur_scope.children.find { |c| c.name == "local:#{node.value}" }
+      sym = @cur_scope.find_var(node.value)
+      sym.instruction_index = next_free_index
+
+      @cur_scope = @cur_scope.children.find { |c| c.name == node.value }
 
       params_node = node.children[0]
       params_node.children.each { |p|
-        @instructions << IR::StoreVar.new(@cur_scope.resolve(p.value))
+        @instructions << IR::StoreVar.new(@cur_scope.find_var(p.value).index)
       }
 
       body_node = node.children[1]
       body_node.children.each { |s| ir(s) }
 
       @instructions << IR::Return.new
+      @instructions[jump_index].target = next_free_index
       @cur_scope = @cur_scope.parent
     end
 
     def ir(node)
       case node.type
+      when :function
+        func_ir(node)
+
       when :number, :string, :boolean
         @instructions << IR::Push.new(node.value)
 
@@ -65,19 +71,17 @@ module Potato
         @instructions << IR::Print.new
 
       when :variable
-        @instructions <<  IR::LoadVar.new(@cur_scope.find_var(node.value))
+        @instructions <<  IR::LoadVar.new(@cur_scope.find_var(node.value).index)
 
       when :assign
         ir(node.children[1])
-
         var_name = node.children[0].value
-        index = @cur_scope.find_var(var_name)
-
+        index = @cur_scope.find_var(var_name)&.index
         @instructions << IR::StoreVar.new(index)
 
       when :func_call
         node.children.each { |child| ir(child) }
-        @instructions << IR::Call.new(node.value, node.children.size)
+        @instructions << IR::Call.new(@cur_scope.find_var(node.value).instruction_index, node.children.size)
 
       when :equals_equals
         node.children.each { |child| ir(child) }

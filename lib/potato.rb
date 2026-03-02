@@ -1,5 +1,5 @@
+require_relative "printer"
 require_relative "tokenizer"
-require_relative "ast"
 require_relative "parser"
 require_relative "desugar"
 require_relative "analysis"
@@ -12,11 +12,12 @@ module Potato
     source = File.read(path)
     ast = Parser.parse(source)
     ast = Desugar.desugar(ast)
-    AST::Printer.print(ast) if options[:ast]
+    PrintTree.print(ast) if options[:ast]
     scope = ScopeTree.build(ast)
-    scope.pretty_print if options[:scope]
+    PrintTree.print(scope) if options[:scope]
     ir = Lowering.lower(ast, scope)
-    Compiler.compile(scope, ir, print: options[:ir])
+    PrintTree.print(ir) if options[:ir]
+    Compiler.compile(scope, ir)
   end
 end
 

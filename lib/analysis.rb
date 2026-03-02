@@ -23,23 +23,6 @@ module Potato
     def lookup(name)
       symbol_table[name] || parent&.lookup(name)
     end
-
-    def pretty_print(indent = 0, prefix = "", is_last = true)
-      connector = indent == 0 ? "" : is_last ? "└── " : "├── "
-      puts "#{prefix}#{connector}#{@name}"
-
-      child_prefix = prefix + (indent == 0 ? "" : is_last ? "    " : "│   ")
-
-      symbol_table.each_with_index do |(name, sym), i|
-        is_last_entry = i == symbol_table.size - 1 && children.empty?
-        tag = sym.kind == :function ? " @#{sym.bytecode_location}" : " #{sym.locals_index}"
-        puts "#{child_prefix}#{is_last_entry ? "└── " : "├── "}#{name} (#{sym.kind})#{tag}"
-      end
-
-      children.each_with_index do |child, i|
-        child.pretty_print(indent + 1, child_prefix, i == children.size - 1)
-      end
-    end
   end
 
   class ScopeTree

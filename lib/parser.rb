@@ -1,4 +1,17 @@
 module Potato
+  module AST
+    class Node
+      attr_reader :type, :value, :children, :line
+
+      def initialize(type, value = nil, children = [], line = nil)
+        @type = type
+        @value = value
+        @children = children
+        @line = line
+      end
+    end
+  end
+
   class Parser
     def self.parse(source)
       source.lines.each_with_index.with_object([]) do |(line, index), nodes|

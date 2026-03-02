@@ -1,10 +1,6 @@
 module Potato
   class Compiler
     def self.compile(scope, ir, print: false)
-    if print
-      ir.each_with_index { |instruction, i| puts "  #{i}: #{instruction.inspect}" }
-    end
-
       File.open("potat.o", "wb") do |f|
         write_ir(ir, f)
       end

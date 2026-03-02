@@ -1,5 +1,5 @@
 module Potato
-  Symbol = Struct.new(:name, :index, :kind, :instruction_index)
+  Symbol = Struct.new(:name, :locals_index, :kind, :bytecode_location)
 
   class Scope
     attr_reader :parent, :children, :symbol_table, :name
@@ -20,11 +20,11 @@ module Potato
       symbol_table.size
     end
 
-    def find_var(name)
-      symbol_table[name] || parent&.find_var(name)
+    def lookup(name)
+      symbol_table[name] || parent&.lookup(name)
     end
 
-    def print(indent = 0, prefix = "", is_last = true)
+    def pretty_print(indent = 0, prefix = "", is_last = true)
       connector = indent == 0 ? "" : is_last ? "└── " : "├── "
       puts "#{prefix}#{connector}#{@name}"
 
@@ -32,7 +32,7 @@ module Potato
 
       symbol_table.each_with_index do |(name, sym), i|
         is_last_entry = i == symbol_table.size - 1 && children.empty?
-        tag = sym.kind == :function ? " @#{sym.instruction_index}" : " #{sym.index}"
+        tag = sym.kind == :function ? " @#{sym.bytecode_location}" : " #{sym.locals_index}"
         puts "#{child_prefix}#{is_last_entry ? "└── " : "├── "}#{name} (#{sym.kind})#{tag}"
       end
 
@@ -42,22 +42,22 @@ module Potato
     end
   end
 
-  class Analysis
+  class ScopeTree
     def initialize
       @global_scope = Scope.new("global")
       @cur_scope = @global_scope
     end
 
-    def self.analyze(ast)
-      new.analyze(ast)
+    def self.build(ast)
+      new.build(ast)
     end
 
-    def analyze(ast)
-      ast.each { |node| analyze_node(node) }
+    def build(ast)
+      ast.each { |node| scope_node(node) }
       @global_scope
     end
 
-    def analyze_node(node)
+    def scope_node(node)
       case node.type
       when :function
         @cur_scope.add_to_scope(node.value, kind: :function)
@@ -68,22 +68,22 @@ module Potato
         params_node = node.children[0]
         body_node = node.children[1]
         params_node.children.each { |p| @cur_scope.add_to_scope(p.value, kind: :param) }
-        body_node.children.each { |s| analyze_node(s) }
+        body_node.children.each { |s| scope_node(s) }
 
         @cur_scope = @cur_scope.parent
 
       when :assign
         var_name = node.children[0].value
         @cur_scope.add_to_scope(var_name, kind: :local)
-        analyze_node(node.children[1])
+        scope_node(node.children[1])
 
       when :variable
-        if @cur_scope.find_var(node.value).nil?
+        if @cur_scope.lookup(node.value).nil?
           err "Undefined variable: #{node.value}", node.line
         end
 
       else
-        node.children.each { |c| analyze_node(c) }
+        node.children.each { |c| scope_node(c) }
       end
     end
   end

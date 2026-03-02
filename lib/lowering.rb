@@ -48,8 +48,8 @@ module Potato
       jump_index = @instructions.size
       write IR::Jump.new(nil)
 
-      func = @cur_scope.find_var(node.value)
-      func.instruction_index = next_free_byte
+      func = @cur_scope.lookup(node.value)
+      func.bytecode_location = next_free_byte
 
       @cur_scope = @cur_scope.children.find { |c| c.name == node.value }
 
@@ -81,17 +81,17 @@ module Potato
         write IR::Print.new
 
       when :variable
-        write IR::LoadVar.new(@cur_scope.find_var(node.value).index)
+        write IR::LoadVar.new(@cur_scope.lookup(node.value).locals_index)
 
       when :assign
         ir(node.children[1])
         var_name = node.children[0].value
-        index = @cur_scope.find_var(var_name)&.index
+        index = @cur_scope.lookup(var_name)&.locals_index
         write IR::StoreVar.new(index)
 
       when :func_call
         node.children.each { |child| ir(child) }
-        write IR::Call.new(@cur_scope.find_var(node.value).instruction_index, node.children.size)
+        write IR::Call.new(@cur_scope.lookup(node.value).bytecode_location, node.children.size)
 
       when :equals_equals
         node.children.each { |child| ir(child) }

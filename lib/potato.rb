@@ -13,8 +13,8 @@ module Potato
     ast = Parser.parse(source)
     ast = Desugar.desugar(ast)
     AST::Printer.print(ast) if options[:ast]
-    scope = Analysis.analyze(ast)
-    scope.print if options[:scope]
+    scope = ScopeTree.build(ast)
+    scope.pretty_print if options[:scope]
     ir = Lowering.lower(ast, scope)
     Compiler.compile(scope, ir, print: options[:ir])
   end

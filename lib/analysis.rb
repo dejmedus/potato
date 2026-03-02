@@ -11,9 +11,9 @@ module Potato
       @name = name
     end
 
-    def add_to_scope(name, kind:)
+    def add_to_scope(name, kind:, index: nil)
       return if symbol_table.key?(name)
-      symbol_table[name] = Symbol.new(name, next_free_index, kind, nil)
+      symbol_table[name] = Symbol.new(name, index || next_free_index, kind, nil)
     end
 
     def next_free_index
@@ -21,7 +21,13 @@ module Potato
     end
 
     def lookup(name)
-      symbol_table[name] || parent&.lookup(name)
+      return symbol_table[name] if symbol_table.key?(name)
+
+      parent_lookup = parent&.lookup(name)
+      if parent_lookup
+        add_to_scope(name, kind: :captured, index: parent_lookup.locals_index)
+        return symbol_table[name]
+      end
     end
   end
 

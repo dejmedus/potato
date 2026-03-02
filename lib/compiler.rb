@@ -29,6 +29,8 @@ module Potato
         end
       when IR::LoadVar
         write(f, 0x04, instruction.index)
+      when IR::LoadCaptured
+        write(f, 0x0C, instruction.index)
       when IR::StoreVar
         write(f, 0x05, instruction.index)
       when IR::Add

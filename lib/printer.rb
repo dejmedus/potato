@@ -34,7 +34,7 @@ module Potato
       case obj
       when Scope
         locals = obj.symbol_table.reject { |_, s| s.kind == :function }.map do |name, sym|
-          "#{sym.kind == :param ? "@" : ""}#{name} #{sym.locals_index}"
+          "#{sym.kind == :param ? "@" : sym.kind == :captured ? "&" : ""}#{name} #{sym.locals_index}"
         end
         locals + obj.children
       when AST::Node then obj.children

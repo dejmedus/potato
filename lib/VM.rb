@@ -32,6 +32,11 @@ module PotatoVM
           index = read
           stack.push(locals[index])
           err "Unknown variable" if locals[index].nil?
+        when 0x0C # captured variable
+          index = read
+          parent_locals = scopes.last[:locals]
+          stack.push(parent_locals[index])
+          err "Unknown captured variable" if parent_locals[index].nil?
         when 0x05 # assign
           index = read
           value = stack.pop
@@ -53,7 +58,7 @@ module PotatoVM
           arg_count = read
           scopes.push({ locals: locals, call_site: @pos })
           locals = Array.new(100)
-          args = stack.pop(arg_count).reverse
+          args = stack.pop(arg_count)
           args.each_with_index { |arg, i| locals[i] = arg }
           @pos = target
         when 0x0A # return

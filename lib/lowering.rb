@@ -3,6 +3,7 @@ module Potato
   class IR
     Push = Struct.new(:value)
     LoadVar = Struct.new(:index)
+    LoadCaptured = Struct.new(:index)
     StoreVar = Struct.new(:index)
     Add = Struct.new
     Equality = Struct.new
@@ -81,7 +82,13 @@ module Potato
         write IR::Print.new
 
       when :variable
-        write IR::LoadVar.new(@cur_scope.lookup(node.value).locals_index)
+        symbol = @cur_scope.lookup(node.value)
+        
+        if symbol.kind == :captured
+          write IR::LoadCaptured.new(symbol.locals_index)
+        else
+          write IR::LoadVar.new(symbol.locals_index)
+        end
 
       when :assign
         ir(node.children[1])

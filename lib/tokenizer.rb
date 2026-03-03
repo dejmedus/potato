@@ -15,6 +15,7 @@ module Potato
   class Tokenizer
     def self.tokenize(line)
       lexemes = line.scan(/"(?:\\.|[^"])*"|:\)|:\(|[(),]|[^\s(),]+/).reject(&:empty?)
+      var_regex = /\A(?:[_\p{L}\p{Extended_Pictographic}])(?:[\p{Word}\p{Extended_Pictographic}\u200D\uFE0F]*)\z/u
       
       result = []
       lexemes.each_with_index do |token, index|
@@ -34,7 +35,7 @@ module Potato
         when /^".*"$/ then result << Token.new(:STRING, token[1..-2])
         when ":(" then result << Token.new(:BOOLEAN, token)
         when ":)" then result << Token.new(:BOOLEAN, token)
-        when /^[a-zA-Z_]\w*$/ then result << Token.new(:VARIABLE, token)
+        when var_regex then result << Token.new(:VARIABLE, token)
         else err "Unknown token: #{token}"
         end
       end

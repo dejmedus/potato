@@ -9,6 +9,7 @@
   "categories": [
     "Programming Languages"
   ],
+  "repository": "github.com/dejmedus/potato",
   "contributes": {
     "languages": [
       {
@@ -76,15 +77,52 @@
             }
           },
           {
-            "scope": "keyword.other.say.potato",
+            "scope": "comment.line.potato",
             "settings": {
-              "foreground": "#666666"
+              "foreground": "#aaaaaa"
             }
           },
           {
-            "scope": "constant.numeric.potato",
+            "scope": [
+              "keyword.operator.paren.begin.potato",
+              "keyword.operator.paren.end.potato",
+              "keyword.operator.paren.potato"
+            ],
             "settings": {
-              "foreground": "#606060"
+              "foreground": "#383838",
+              "fontStyle": "bold"
+            }
+          },
+          {
+            "scope": [
+              "keyword.other.say.potato",
+              "keyword.operator.is.potato",
+              "keyword.operator.equals.potato",
+              "keyword.operator.gains.potato"
+            ],
+            "settings": {
+              "foreground": "#686868"
+            }
+          },
+          {
+            "scope": [
+              "constant.numeric.potato",
+              "string.quoted.double.potato"
+            ],
+            "settings": {
+              "foreground": "#4d4d4d"
+            }
+          },
+          {
+            "scope": "keyword.operator.true.potato",
+            "settings": {
+              "foreground": "#aa8dff"
+            }
+          },
+          {
+            "scope": "keyword.operator.false.potato",
+            "settings": {
+              "foreground": "#6bceff"
             }
           }
         ]

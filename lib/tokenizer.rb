@@ -12,21 +12,35 @@ module Potato
     end
   end
 
- class Tokenizer
+  class Tokenizer
     def self.tokenize(line)
-      line
-        .strip
-        .split(/\s+/)
-        .reject(&:empty?)
-        .map do |token|
-          case token.downcase
-          when "say"    then Token.new(:PRINT, nil)
-          when "potato" then Token.new(:ADD, nil)
-          when /^\d+$/  then Token.new(:NUMBER, token.to_i)
-          else
-            raise "Unknown token: #{token}"
-          end
+      lexemes = line.scan(/"(?:\\.|[^"])*"|:\)|:\(|[(),]|[^\s(),]+/).reject(&:empty?)
+      var_regex = /\A(?:[_\p{L}\p{Extended_Pictographic}])(?:[\p{Word}\p{Extended_Pictographic}\u200D\uFE0F]*)\z/u
+      
+      result = []
+      lexemes.each_with_index do |token, index|
+        case token.downcase
+        when "🍠"
+          result << Token.new(:COMMENT, lexemes[index..])
+          break
+        when "say"   then result << Token.new(:PRINT, nil)
+        when "potato" then result << Token.new(:ADD, nil)
+        when "is"     then result << Token.new(:EQUALS, nil)
+        when "(" then result << Token.new(:LPAREN, nil)
+        when ")" then result << Token.new(:RPAREN, nil)
+        when "gains"  then result << Token.new(:ADD_EQUALS, nil)
+        when "equals?"  then result << Token.new(:EQUALS_EQUALS, nil)
+        when ","  then result << Token.new(:SEPARATOR, nil)
+        when /^\d+$/  then result << Token.new(:NUMBER, token.to_i)
+        when /^".*"$/ then result << Token.new(:STRING, token[1..-2])
+        when ":(" then result << Token.new(:BOOLEAN, token)
+        when ":)" then result << Token.new(:BOOLEAN, token)
+        when var_regex then result << Token.new(:VARIABLE, token)
+        else err "Unknown token: #{token}"
         end
+      end
+      
+      result
     end
   end
 end

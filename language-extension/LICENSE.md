@@ -1,0 +1,1 @@
+pls don't yell at me anymore vsce package

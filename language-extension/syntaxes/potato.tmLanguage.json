@@ -4,10 +4,26 @@
   "scopeName": "source.potato",
   "patterns": [
     { "include": "#numbers" },
+    { "include": "#strings" },
     { "include": "#say" },
+    { "include": "#is" },
+    { "include": "#equals" },
+    { "include": "#gains" },
+    { "include": "#true" },
+    { "include": "#false" },
+    { "include": "#parenthesis" },
+    { "include": "#comment" },
     { "include": "#potato_rainbow" }
   ],
   "repository": {
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.potato",
+          "match": "\"(?:\\\\.|[^\"])*\""
+        }
+      ]
+    },
     "numbers": {
       "patterns": [
         {
@@ -21,6 +37,75 @@
         {
           "name": "keyword.other.say.potato",
           "match": "\\bsay\\b"
+        }
+      ]
+    },
+    "is": {
+      "patterns": [
+        {
+          "name": "keyword.operator.is.potato",
+          "match": "\\bis\\b"
+        }
+      ]
+    },
+    "equals": {
+      "patterns": [
+        {
+          "name": "keyword.operator.equals.potato",
+          "match": "equals\\?"
+        }
+      ]
+    },
+    "gains": {
+      "patterns": [
+        {
+          "name": "keyword.operator.gains.potato",
+          "match": "\\bgains\\b"
+        }
+      ]
+    },
+    "true": {
+      "patterns": [
+        {
+          "name": "keyword.operator.true.potato",
+          "match": ":\\)"
+        }
+      ]
+    },
+    "false": {
+      "patterns": [
+        {
+          "name": "keyword.operator.false.potato",
+          "match": ":\\("
+        }
+      ]
+    },
+    "parenthesis": {
+      "patterns": [
+        {
+          "name": "meta.parameters.potato",
+          "begin": "(?<!:)\\(",
+          "end": "(?<!:)\\)",
+          "beginCaptures": {
+            "0": { "name": "keyword.operator.paren.begin.potato" }
+          },
+          "endCaptures": {
+            "0": { "name": "keyword.operator.paren.end.potato" }
+          },
+          "patterns": [
+            { "include": "#strings" },
+            { "include": "#numbers" },
+            { "include": "#true" },
+            { "include": "#false" }
+          ]
+        }
+      ]
+    },
+    "comment": {
+      "patterns": [
+        {
+          "name": "comment.line.potato",
+          "match": "🍠.+"
         }
       ]
     },

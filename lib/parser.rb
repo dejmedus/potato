@@ -74,24 +74,9 @@ module Potato
       end
     end
 
-    def self.split_on_separator(tokens)
-      tokens.slice_when { |t, _| t.type == :SEPARATOR }
-            .map { |group| group.reject { |t| t.type == :SEPARATOR } }
-    end
-
     def self.parse_expression(tokens, l = nil)
       node, _ = parse_expr(tokens, 0, 0, l)
       node
-    end
-
-    def self.parse_token(token, l = nil)
-      case token.type
-      when :NUMBER   then AST::Node.new(:number, token.value, [])
-      when :VARIABLE then AST::Node.new(:variable, token.value, [], l)
-      when :STRING   then AST::Node.new(:string, token.value, [])
-      when :BOOLEAN  then AST::Node.new(:boolean, token.value == ":)", [])
-      else err "Unknown expression: #{token.type}"
-      end
     end
 
     def self.parse_expr(tokens, index, cur_precedence, l = nil)
@@ -128,6 +113,16 @@ module Potato
       [node, index]
     end
 
+    def self.parse_token(token, l = nil)
+      case token.type
+      when :NUMBER   then AST::Node.new(:number, token.value, [])
+      when :VARIABLE then AST::Node.new(:variable, token.value, [], l)
+      when :STRING   then AST::Node.new(:string, token.value, [])
+      when :BOOLEAN  then AST::Node.new(:boolean, token.value == ":)", [])
+      else err "Unknown expression: #{token.type}"
+      end
+    end
+
     def self.parse_params(tokens, l)
       split_params(tokens).map { |param_tokens| parse_expression(param_tokens, l) }
     end
@@ -145,6 +140,11 @@ module Potato
       end
 
       groups.reject(&:empty?)
+    end
+
+    def self.split_on_separator(tokens)
+      tokens.slice_when { |t, _| t.type == :SEPARATOR }
+            .map { |group| group.reject { |t| t.type == :SEPARATOR } }
     end
 
     def self.closing_rparen(tokens, loc)

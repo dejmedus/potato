@@ -62,9 +62,11 @@ module PotatoVM
           args.each_with_index { |arg, i| locals[i] = arg }
           @pos = target
         when 0x0A # return
+          return_value = stack.last
           scope = scopes.pop
           locals = scope[:locals]
           @pos = scope[:call_site]
+          stack.push(return_value)
         when 0x0B # jump
           @pos = read
         end

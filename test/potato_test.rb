@@ -124,4 +124,22 @@ class PotatoTest < Minitest::Test
 
     assert_equal "local\n10\n4\n2\n", output
   end
+
+  def test_function_call_return
+    output = run_potato(<<~POTATO)
+      wow (msg) msg
+      say wow ("a")
+    POTATO
+
+    assert_equal "a\n", output
+  end
+
+  def test_function_call_return
+    output = run_potato(<<~POTATO)
+      wow (msg) msg
+      say wow( wow ("hello"))
+    POTATO
+
+    assert_equal "hello\n", output
+  end
 end

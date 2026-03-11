@@ -32,7 +32,7 @@ module Potato
         head_value = tokens[0].value
         case tokens[1]&.type
         when :LPAREN
-          close = tokens.index { |t| t.type == :RPAREN }
+          close = closing_rparen(tokens, 1) 
           err "Expected )", l unless close
 
           param_tokens = tokens[2...close]
@@ -47,15 +47,11 @@ module Potato
               AST::Node.new(:body, nil, statements.map { |s| ast(s, l) })
             ], l)
           else
-            args = param_tokens.reject { |t| t.type == :SEPARATOR }
-            AST::Node.new(:func_call, head_value,
-              args.map { |t| parse_token(t, l) }
-            )
+            AST::Node.new(:func_call, head_value, parse_params(param_tokens, l), l)
           end
 
         when :EQUALS
           err "#{head_value} is what?", l unless tokens[2..].size >= 1
-
           AST::Node.new(:assign, nil, [
             AST::Node.new(:variable, head_value, [], l),
             parse_expression(tokens[2..], l)
@@ -63,10 +59,9 @@ module Potato
 
         when :ADD_EQUALS
           err "#{head_value} gains what?", l unless tokens[2..].size >= 1
-          
           AST::Node.new(:add_assign, nil, [
             AST::Node.new(:variable, head_value, [], l),
-            parse_token(tokens[2], l)
+            parse_expression(tokens[2..], l)
           ], l)
 
         else
@@ -74,7 +69,8 @@ module Potato
         end
 
       when :COMMENT then nil
-      else nil # unexecuted code
+      else
+        err "Expected a statement", l
       end
     end
 
@@ -99,8 +95,7 @@ module Potato
     end
 
     def self.parse_expr(tokens, index, cur_precedence, l = nil)
-      left = parse_token(tokens[index], l)
-      index += 1  # consume value
+      left, index = parse_chunk(tokens, index, l)
 
       loop do
         node_type = tokens[index]&.type
@@ -115,6 +110,51 @@ module Potato
       end
 
       [left, index]
+    end
+
+    def self.parse_chunk(tokens, index, l)
+      node = parse_token(tokens[index], l)
+      index += 1 # consume token
+
+      if node.type == :variable && tokens[index]&.type == :LPAREN
+        close = closing_rparen(tokens, index)
+
+        err "Expected )", l unless close
+
+        node = AST::Node.new(:func_call, node.value, parse_params(tokens[index+1...close], l), l)
+        index = close + 1 # consume remaining
+      end
+
+      [node, index]
+    end
+
+    def self.parse_params(tokens, l)
+      split_params(tokens).map { |param_tokens| parse_expression(param_tokens, l) }
+    end
+
+    def self.split_params(tokens)
+      depth  = 0
+      groups = [[]]
+      tokens.each do |t|
+        case t.type
+        when :LPAREN then depth += 1
+        when :RPAREN then depth -= 1
+        when :SEPARATOR then groups << [] and next if depth == 0
+        end
+        groups.last << t
+      end
+
+      groups.reject(&:empty?)
+    end
+
+    def self.closing_rparen(tokens, loc)
+      depth = 0
+      tokens[loc..].each_with_index do |t, i|
+        depth += 1 if t.type == :LPAREN
+        depth -= 1 if t.type == :RPAREN
+        return loc + i if depth == 0
+      end
+      nil
     end
   end
 end

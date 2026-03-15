@@ -1,0 +1,50 @@
+{
+  "open": [
+    {
+      "tab": "zsh",
+      "commands": ["*close"]
+    },
+    {
+      "tab": "git",
+      "commands": ["git branch"],
+      "icon": "git"
+    },
+    {
+      "tab": "potato",
+      "commands": [],
+      "header": "./bin/potat --ast --scope --ir",
+      "icon": "code"
+    },
+    {
+      "tab": "test",
+      "commands": [],
+      "header": "ruby test/potato_test.rb",
+      "icon": "beaker"
+    },
+    {
+      "tab": "lang ext",
+      "commands": ["cd language-extension"],
+      "icon": "cloud"
+    }
+  ],
+  "lang-ext": [
+    {
+      "tab": "lang ext",
+      "commands": [
+        "vsce package",
+        "code --install-extension potato-0.0.1.vsix",
+        "code ."
+      ]
+    },
+    {
+      "tab": "potato",
+      "commands": ["code -r ."]
+    }
+  ],
+  "test": [
+    {
+      "tab": "test",
+      "commands": ["ruby test/potato_test.rb"]
+    }
+  ]
+}

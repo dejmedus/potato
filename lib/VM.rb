@@ -22,10 +22,15 @@ module PotatoVM
         when 0x01 # number
           stack.push(read)
         when 0x02 # add
-          stack.map!(&:to_s) if !stack.all? { |v| v.is_a?(Numeric) }
-          value = stack.reduce(:+)
-          stack.clear
-          stack.push(value)
+          right = stack.pop
+          left = stack.pop
+
+          if !left.is_a?(Numeric) || !right.is_a?(Numeric)
+            left = left.to_s
+            right = right.to_s
+          end
+
+          stack.push(left + right)
         when 0x03 # print
           puts stack.pop
         when 0x04 # variable
@@ -50,6 +55,18 @@ module PotatoVM
           right = stack.pop
           left = stack.pop
           stack.push(left == right)
+        when 0x0E # || operator
+          right = stack.pop
+          left = stack.pop
+          stack.push(left || right)
+        when 0x0F # && operator
+          right = stack.pop
+          left = stack.pop
+          stack.push(left && right)
+        when 0x0D # > operator
+          right = stack.pop
+          left = stack.pop
+          stack.push(left > right)
         when 0x08 # boolean
           value = read
           stack.push(value == 1)
@@ -62,7 +79,7 @@ module PotatoVM
           args.each_with_index { |arg, i| locals[i] = arg }
           @pos = target
         when 0x0A # return
-          return_value = stack.last
+          return_value = stack.pop
           scope = scopes.pop
           locals = scope[:locals]
           @pos = scope[:call_site]

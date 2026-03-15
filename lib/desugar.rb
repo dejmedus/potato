@@ -14,6 +14,16 @@ module Potato
           var,
           AST::Node.new(:add, nil, [var, value])
         ], node.line)
+      
+      when :greater_equals
+        left = node.children[0]
+        right = node.children[1]
+
+        AST::Node.new(:or, nil, [
+          AST::Node.new(:greater_than, nil, [left, right], node.line),
+          AST::Node.new(:equals_equals, nil, [left, right], node.line)
+        ], node.line)
+
       else
         AST::Node.new(
           node.type,

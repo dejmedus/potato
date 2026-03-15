@@ -11,6 +11,10 @@
     { "include": "#gains" },
     { "include": "#true" },
     { "include": "#false" },
+    { "include": "#and" },
+    { "include": "#or" },
+    { "include": "#bigger" },
+    { "include": "#atleast" },
     { "include": "#parenthesis" },
     { "include": "#comment" },
     { "include": "#potato_rainbow" }
@@ -77,6 +81,38 @@
         {
           "name": "keyword.operator.false.potato",
           "match": ":\\("
+        }
+      ]
+    },
+    "and": {
+      "patterns": [
+        {
+          "name": "keyword.operator.and.potato",
+          "match": "\\band\\b"
+        }
+      ]
+    },
+    "or": {
+      "patterns": [
+        {
+          "name": "keyword.operator.or.potato",
+          "match": "\\bor\\b"
+        }
+      ]
+    },
+    "bigger": {
+      "patterns": [
+        {
+          "name": "keyword.operator.bigger.potato",
+          "match": "bigger\\?"
+        }
+      ]
+    },
+    "atleast": {
+      "patterns": [
+        {
+          "name": "keyword.operator.atleast.potato",
+          "match": "atleast\\?"
         }
       ]
     },

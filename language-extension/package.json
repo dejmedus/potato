@@ -98,7 +98,11 @@
               "keyword.other.say.potato",
               "keyword.operator.is.potato",
               "keyword.operator.equals.potato",
-              "keyword.operator.gains.potato"
+              "keyword.operator.gains.potato",
+              "keyword.operator.and.potato",
+              "keyword.operator.or.potato",
+              "keyword.operator.bigger.potato",
+              "keyword.operator.atleast.potato"
             ],
             "settings": {
               "foreground": "#686868"

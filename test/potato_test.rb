@@ -39,6 +39,65 @@ class PotatoTest < Minitest::Test
     assert_equal "false\n", output
   end
 
+  def test_equality
+    output = run_potato(<<~POTATO)
+      result is 2 potato 2 equals? 4 potato 10
+      say result
+    POTATO
+    
+    assert_equal "false\n", output
+  end
+
+  def test_greater_equals
+    output = run_potato(<<~POTATO)
+      say 2 atleast? 2 
+      say 4 atleast? 2 
+      say 1 atleast? 2 
+    POTATO
+    
+    assert_equal "true\ntrue\nfalse\n", output
+  end
+
+  def test_greater_than
+    output = run_potato(<<~POTATO)
+      say 2 greater? 2
+      say 4 greater? 2
+      say 1 greater? 2
+    POTATO
+    
+    assert_equal "false\ntrue\nfalse\n", output
+  end
+
+  def test_greater_than
+    output = run_potato(<<~POTATO)
+      say 2 greater? 2
+      say 4 greater? 2
+      say 1 greater? 2
+    POTATO
+    
+    assert_equal "false\ntrue\nfalse\n", output
+  end
+
+  def test_or
+    output = run_potato(<<~POTATO)
+      say :) or :(
+      say :) or :)
+      say :( or :(
+    POTATO
+    
+    assert_equal "true\ntrue\nfalse\n", output
+  end
+
+  def test_and
+    output = run_potato(<<~POTATO)
+      say :) and :(
+      say :) and :)
+      say :( and :(
+    POTATO
+    
+    assert_equal "false\ntrue\nfalse\n", output
+  end
+
   def test_function_call
     output = run_potato(<<~POTATO)
       greet (name) say name
@@ -65,6 +124,18 @@ class PotatoTest < Minitest::Test
     POTATO
     
     assert_equal "15\n", output
+  end
+
+  def test_add_operator
+    output = run_potato(<<~POTATO)
+      x is 5
+      x is x potato 10 potato 10
+      say x
+
+      say 10 potato 10 equals? 20
+    POTATO
+    
+    assert_equal "25\ntrue\n", output
   end
 
   def test_multiple_statements
@@ -134,7 +205,7 @@ class PotatoTest < Minitest::Test
     assert_equal "a\n", output
   end
 
-  def test_function_call_return
+  def test_function_call_return_nested
     output = run_potato(<<~POTATO)
       wow (msg) msg
       say wow( wow ("hello"))

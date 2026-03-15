@@ -7,6 +7,9 @@ module Potato
     StoreVar = Struct.new(:index)
     Add = Struct.new
     Equality = Struct.new
+    GreaterThan = Struct.new
+    Or = Struct.new
+    And = Struct.new
     Print = Struct.new
     Call = Struct.new(:target, :arg_count)
     Return = Struct.new
@@ -25,13 +28,21 @@ module Potato
       new(scope).lower(ast)
     end
 
+    OPERATORS = {
+      equals_equals: IR::Equality,
+      greater_than:  IR::GreaterThan,
+      or:            IR::Or,
+      and:           IR::And,
+      add:           IR::Add
+    }
+
     def write(instruction)
       @instructions << instruction
       @byte_offset += case instruction
 
       when IR::Push then instruction.value.is_a?(String) ? 5 + instruction.value.bytesize : 5
       when IR::Call then 9
-      when IR::Add, IR::Print, IR::Equality, IR::Return then 1
+      when *OPERATORS.values, IR::Print, IR::Return then 1
       else 5
       end
     end
@@ -73,10 +84,6 @@ module Potato
       when :string
         write IR::Push.new(node.value)
 
-      when :add
-        node.children.each { |child| ir(child) }
-        write IR::Add.new
-
       when :print
         node.children.each { |child| ir(child) }
         write IR::Print.new
@@ -100,9 +107,9 @@ module Potato
         node.children.each { |child| ir(child) }
         write IR::Call.new(@cur_scope.lookup(node.value).bytecode_location, node.children.size)
 
-      when :equals_equals
+      when *OPERATORS.keys
         node.children.each { |child| ir(child) }
-        write IR::Equality.new
+        write OPERATORS[node.type].new
       end
     end
   end

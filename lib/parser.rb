@@ -22,6 +22,8 @@ module Potato
       end
     end
 
+    OPERATORS = { ADD: 10, EQUALS_EQUALS: 5, GREATER_THAN: 5, GREATER_EQUALS: 5, OR: 2, AND: 3 }
+
     def self.ast(tokens, l)
       case tokens[0]&.type
       when :PRINT
@@ -86,7 +88,7 @@ module Potato
         node_type = tokens[index]&.type
         break unless node_type
 
-        precedence = { ADD: 10, EQUALS_EQUALS: 5  }[node_type]
+        precedence = OPERATORS[node_type]
         break unless precedence && precedence > cur_precedence
 
         index += 1  # consume operator

@@ -6,6 +6,8 @@
   "engines": {
     "vscode": "^1.106.0"
   },
+  "publisher": "dejmedus",
+  "icon": "potato.png",
   "categories": [
     "Programming Languages"
   ],

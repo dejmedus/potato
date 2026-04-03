@@ -26,6 +26,8 @@ module Potato
           f.write(instruction.value)
         when TrueClass, FalseClass
           write(f, 0x08, instruction.value ? 1 : 0)
+        when NilClass
+          write(f, 0x11)
         end
       when IR::LoadVar
         write(f, 0x04, instruction.index)
@@ -52,6 +54,8 @@ module Potato
         write(f, 0x0A)
       when IR::Jump
         write(f, 0x0B, instruction.target)
+      when IR::JumpIfFalse
+        write(f, 0x10, instruction.target)
       end
     end
   end

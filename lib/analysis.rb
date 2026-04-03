@@ -25,6 +25,7 @@ module Potato
 
       parent_lookup = parent&.lookup(name)
       if parent_lookup
+        return parent_lookup if parent_lookup.kind == :function
         add_to_scope(name, kind: :captured, index: parent_lookup.locals_index)
         return symbol_table[name]
       end

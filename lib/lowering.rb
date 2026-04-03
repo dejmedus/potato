@@ -14,6 +14,7 @@ module Potato
     Call = Struct.new(:target, :arg_count)
     Return = Struct.new
     Jump = Struct.new(:target)
+    JumpIfFalse = Struct.new(:target)
   end
 
   class Lowering
@@ -40,7 +41,7 @@ module Potato
       @instructions << instruction
       @byte_offset += case instruction
 
-      when IR::Push then instruction.value.is_a?(String) ? 5 + instruction.value.bytesize : 5
+      when IR::Push then instruction.value.is_a?(String) ? 5 + instruction.value.bytesize : instruction.value.nil? ? 1 : 5
       when IR::Call then 9
       when *OPERATORS.values, IR::Print, IR::Return then 1
       else 5
@@ -73,6 +74,29 @@ module Potato
       @cur_scope = @cur_scope.parent
     end
 
+    def conditional_ir(node)
+      ir(node.children[0])  # condition
+
+      jump_false_index = @instructions.size
+      write IR::JumpIfFalse.new(nil)
+
+      ir(node.children[1])  # true
+
+      if node.children[2]
+        jump_end_index = @instructions.size
+        write IR::Jump.new(nil)
+        @instructions[jump_false_index].target = next_free_byte
+        ir(node.children[2]) # else true
+        @instructions[jump_end_index].target = next_free_byte
+      else
+        jump_end_index = @instructions.size
+        write IR::Jump.new(nil) 
+        @instructions[jump_false_index].target = next_free_byte  # false 
+        write IR::Push.new(nil)
+        @instructions[jump_end_index].target = next_free_byte
+      end
+    end
+
     def ir(node)
       case node.type
       when :function
@@ -83,6 +107,9 @@ module Potato
 
       when :string
         write IR::Push.new(node.value)
+
+      when :null
+        write IR::Push.new(nil)
 
       when :print
         node.children.each { |child| ir(child) }
@@ -102,6 +129,9 @@ module Potato
         var_name = node.children[0].value
         index = @cur_scope.lookup(var_name)&.locals_index
         write IR::StoreVar.new(index)
+
+      when :conditional
+        conditional_ir(node)
 
       when :func_call
         node.children.each { |child| ir(child) }

@@ -22,7 +22,7 @@ module Potato
       end
     end
 
-    OPERATORS = { ADD: 10, EQUALS_EQUALS: 5, GREATER_THAN: 5, GREATER_EQUALS: 5, OR: 2, AND: 3 }
+    OPERATORS = { ADD: 10, EQUALS_EQUALS: 5, GREATER_THAN: 5, GREATER_EQUALS: 5, OR: 2, AND: 3, IF: 1, ELSE: 0 }
 
     def self.ast(tokens, l)
       case tokens[0]&.type
@@ -88,6 +88,21 @@ module Potato
         node_type = tokens[index]&.type
         break unless node_type
 
+        if node_type == :IF && cur_precedence < 1
+          index += 1  # consume ?
+
+          true_branch, index = parse_expr(tokens, index, 0, l)
+
+          if tokens[index]&.type == :ELSE
+            index += 1  # consume :
+            false_branch, index = parse_expr(tokens, index, 0)
+            left = AST::Node.new(:conditional, nil, [left, true_branch, false_branch], l)
+          else
+            left = AST::Node.new(:conditional, nil, [left, true_branch])
+          end
+          next
+        end
+
         precedence = OPERATORS[node_type]
         break unless precedence && precedence > cur_precedence
 
@@ -121,6 +136,7 @@ module Potato
       when :VARIABLE then AST::Node.new(:variable, token.value, [], l)
       when :STRING   then AST::Node.new(:string, token.value, [])
       when :BOOLEAN  then AST::Node.new(:boolean, token.value == ":)", [])
+      when :NULL     then AST::Node.new(:null, nil, [])
       else err "Unknown expression: #{token.type}"
       end
     end

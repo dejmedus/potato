@@ -1,5 +1,11 @@
 module PotatoVM
   class VM
+
+    # otherwise we can't compare 
+    # to real nil values
+    Null = Object.new
+    def Null.to_s = "nil"
+
     def self.read(bytes = 4)
       value = @bytecode[@pos, bytes].pack("C*").unpack1("L>")
       @pos += bytes
@@ -70,6 +76,8 @@ module PotatoVM
         when 0x08 # boolean
           value = read
           stack.push(value == 1)
+        when 0x11 # nil
+          stack.push(Null)
         when 0x09 # call
           target = read
           arg_count = read
@@ -86,6 +94,10 @@ module PotatoVM
           stack.push(return_value)
         when 0x0B # jump
           @pos = read
+        when 0x10 # jump if false
+          target = read
+          falsey = [false, Null]
+          @pos = target if falsey.include?(stack.pop)
         end
       end
     end

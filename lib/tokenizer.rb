@@ -25,6 +25,7 @@ module Potato
           break
         when "say"   then result << Token.new(:PRINT, nil)
         when "potato" then result << Token.new(:ADD, nil)
+        when "nothing" then result << Token.new(:NULL, nil)
         when "is"     then result << Token.new(:EQUALS, nil)
         when "(" then result << Token.new(:LPAREN, nil)
         when ")" then result << Token.new(:RPAREN, nil)
@@ -34,6 +35,8 @@ module Potato
         when "equals?"  then result << Token.new(:EQUALS_EQUALS, nil)
         when "greater?"  then result << Token.new(:GREATER_THAN, nil)
         when "atleast?"  then result << Token.new(:GREATER_EQUALS, nil)
+        when "?"  then result << Token.new(:IF, nil)
+        when ":"  then result << Token.new(:ELSE, nil)
         when ","  then result << Token.new(:SEPARATOR, nil)
         when /^\d+$/  then result << Token.new(:NUMBER, token.to_i)
         when /^".*"$/ then result << Token.new(:STRING, token[1..-2])

@@ -89,6 +89,26 @@ Adds numbers and concatenates strings
 :( or :(     🍠 false
 ```
 
+####  `?`, `:`, and `nothing`
+
+- `?` if
+- `:` else, it can chain 
+- `nothing` means nothings there (its falsey)
+
+```potato
+a is :) ? "true"
+say a 🍠 "true"
+
+b is :( ? "true" : "false"
+say b 🍠 "false"
+
+c is :( ? "true"
+say c 🍠 nil
+
+d is :) ? nothing
+say d 🍠 nil
+```
+
 ✨ aspirations ✨
 
 unfortunately i've learned about self-hosting

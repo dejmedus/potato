@@ -213,4 +213,44 @@ class PotatoTest < Minitest::Test
 
     assert_equal "hello\n", output
   end
+
+  def test_recursive_function_calls
+    output = run_potato(<<~POTATO)
+      add (num) num gains 2, num equals? 4 ? add(num) : num
+      say add(2)
+    POTATO
+
+    assert_equal "6\n", output
+  end
+
+  def test_if_statement
+    output = run_potato(<<~POTATO)
+      x is :) ? "true"
+      say x
+
+      y is :( ? "true"
+      say y
+    POTATO
+
+    assert_equal "true\nnil\n", output
+  end
+
+  def test_if_else_statement
+    output = run_potato(<<~POTATO)
+      say :) ? "true" : "false"
+    POTATO
+
+    assert_equal "true\n", output
+  end
+
+  def test_elseif_statement
+    output = run_potato(<<~POTATO)
+      say "a" equals? "a" ? "a" : "a" equals? "c" ? "nope" : "nope"
+      say "a" equals? "b" ? "nope" : "a" equals? "a" ? "a" : "nope"
+      say "a" equals? "b" ? "nope" : "a" equals? "c" ? "nope" : "a"
+      say "a" equals? "b" ? "nope" : "a" equals? "c" ? "nope"
+    POTATO
+
+    assert_equal "a\na\na\nnil\n", output
+  end
 end

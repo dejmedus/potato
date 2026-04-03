@@ -2,13 +2,6 @@
 
 A made up bytecode interpreter that started out as a made up [tree-walking interpreter](https://notes.juliab.dev/thoughts/potato)! (I wrote about it for CS 2130 & 3110)
 
-Potato knows how to:
-
-- add
-- assign variables
-- compare values
-- define and call chunks of code
-
 ![./assets/potato.png](./assets/potato.png)
 ![./assets/output.png](./assets/output.png)
 
@@ -58,7 +51,7 @@ Adds numbers and concatenates strings
 "hi" potato " bob" 
 ```
 
-####  `equals?`, `isnt?`
+####  `equals?`, `not?`
 
 `:)` if both are equal, otherwise `:(` 
 
@@ -69,17 +62,17 @@ Adds numbers and concatenates strings
 "a" equals? "b"  🍠 false
 10 equals? "10"  🍠 false
 
-10 isnt? 10    🍠 false
-10 isnt? 20    🍠 true
+10 not? 10    🍠 false
+10 not? 20    🍠 true
 ```
 
-####  `greater?`, `atleast?`
+####  `bigger?`, `atleast?`
 
 - `:)` if greater
 - `:)` if greater or equal 
 
 ```potato
-10 greater? 10   🍠 false
+10 bigger? 10   🍠 false
 10 atleast? 10   🍠 true
 ``` 
 

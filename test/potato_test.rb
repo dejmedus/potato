@@ -50,7 +50,7 @@ class PotatoTest < Minitest::Test
 
   def test_not_equality
     output = run_potato(<<~POTATO)
-      result is 2 isnt? 4 potato 10
+      result is 2 not? 4 potato 10
       say result
     POTATO
     
@@ -79,9 +79,9 @@ class PotatoTest < Minitest::Test
 
   def test_greater_than
     output = run_potato(<<~POTATO)
-      say 2 greater? 2
-      say 4 greater? 2
-      say 1 greater? 2
+      say 2 bigger? 2
+      say 4 bigger? 2
+      say 1 bigger? 2
     POTATO
     
     assert_equal "false\ntrue\nfalse\n", output

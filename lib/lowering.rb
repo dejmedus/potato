@@ -7,7 +7,11 @@ module Potato
     StoreVar = Struct.new(:index)
     Add = Struct.new
     Equality = Struct.new
+    NotEquality = Struct.new
     GreaterThan = Struct.new
+    LesserThan = Struct.new
+    GreaterEquals = Struct.new
+    LesserEquals = Struct.new
     Or = Struct.new
     And = Struct.new
     Print = Struct.new
@@ -31,7 +35,11 @@ module Potato
 
     OPERATORS = {
       equals_equals: IR::Equality,
+      not_equals:    IR::NotEquality,
+      greater_equals: IR::GreaterEquals,
+      lesser_equals: IR::LesserEquals,
       greater_than:  IR::GreaterThan,
+      lesser_than:   IR::LesserThan,
       or:            IR::Or,
       and:           IR::And,
       add:           IR::Add

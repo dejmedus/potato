@@ -61,6 +61,10 @@ module PotatoVM
           right = stack.pop
           left = stack.pop
           stack.push(left == right)
+        when 0x15 # != operator
+          right = stack.pop
+          left = stack.pop
+          stack.push(left != right)
         when 0x0E # || operator
           right = stack.pop
           left = stack.pop
@@ -73,6 +77,18 @@ module PotatoVM
           right = stack.pop
           left = stack.pop
           stack.push(left > right)
+        when 0x12 # < operator
+          right = stack.pop
+          left = stack.pop
+          stack.push(left < right)
+        when 0x13 # >= operator
+          right = stack.pop
+          left = stack.pop
+          stack.push(left >= right)
+        when 0x14 # <= operator
+          right = stack.pop
+          left = stack.pop
+          stack.push(left <= right)
         when 0x08 # boolean
           value = read
           stack.push(value == 1)

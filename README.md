@@ -1,11 +1,13 @@
 ### 🥔 Potato
 
-A made up [bytecode interpreter](https://notes.juliab.dev/thoughts/fancier-potato) that started out as a made up [tree-walking interpreter](https://notes.juliab.dev/thoughts/potato)! (I wrote about it for CS 2130 & 3110) 
+A made up bytecode interpreter that started out as a made up [tree-walking interpreter](https://notes.juliab.dev/thoughts/potato)! (I wrote about it for CS 2130 & 3110)
 
 Potato knows how to:
 
 - add
-- ... and that's about it
+- assign variables
+- compare values
+- define and call chunks of code
 
 ![./assets/potato.png](./assets/potato.png)
 ![./assets/output.png](./assets/output.png)
@@ -16,6 +18,7 @@ Potato knows how to:
 - integers: `2`, `20000000000`
 - strings: `"wow!"`, `"a string!"`
 - booleans: `:)`, `:(`
+- null: `nothing`
 
 #### comments
 
@@ -55,7 +58,7 @@ Adds numbers and concatenates strings
 "hi" potato " bob" 
 ```
 
-####  `equals?`
+####  `equals?`, `isnt?`
 
 `:)` if both are equal, otherwise `:(` 
 
@@ -65,6 +68,9 @@ Adds numbers and concatenates strings
 10 equals? 10    🍠 true
 "a" equals? "b"  🍠 false
 10 equals? "10"  🍠 false
+
+10 isnt? 10    🍠 false
+10 isnt? 20    🍠 true
 ```
 
 ####  `greater?`, `atleast?`
@@ -75,6 +81,16 @@ Adds numbers and concatenates strings
 ```potato
 10 greater? 10   🍠 false
 10 atleast? 10   🍠 true
+``` 
+
+####  `smaller?`, `atmost?`
+
+- `:)` if smaller
+- `:)` if smaller or equal 
+
+```potato
+10 smaller? 10   🍠 false
+10 atmost? 10   🍠 true
 ``` 
 
 ####  `and`, `or`
@@ -92,8 +108,8 @@ Adds numbers and concatenates strings
 ####  `?`, `:`, and `nothing`
 
 - `?` if
-- `:` else, it can chain 
-- `nothing` means nothings there (its falsey)
+- `:` else, can chain 
+- `nothing` null (its falsey)
 
 ```potato
 a is :) ? "true"
@@ -112,11 +128,11 @@ say d 🍠 nil
 ✨ aspirations ✨
 
 unfortunately i've learned about self-hosting
- - fix recursion
- - more comparison
+ - ~~fix recursion~~
+ - ~~more comparison~~
  - conditionals + loops
  - actual string helpers
  - heap
  - maybe? real stack
 
-machine code
+machine code ??

@@ -48,6 +48,15 @@ class PotatoTest < Minitest::Test
     assert_equal "false\n", output
   end
 
+  def test_not_equality
+    output = run_potato(<<~POTATO)
+      result is 2 isnt? 4 potato 10
+      say result
+    POTATO
+    
+    assert_equal "true\n", output
+  end
+
   def test_greater_equals
     output = run_potato(<<~POTATO)
       say 2 atleast? 2 
@@ -58,14 +67,14 @@ class PotatoTest < Minitest::Test
     assert_equal "true\ntrue\nfalse\n", output
   end
 
-  def test_greater_than
+  def test_lesser_equals
     output = run_potato(<<~POTATO)
-      say 2 greater? 2
-      say 4 greater? 2
-      say 1 greater? 2
+      say 2 atmost? 2 
+      say 4 atmost? 2 
+      say 1 atmost? 2 
     POTATO
     
-    assert_equal "false\ntrue\nfalse\n", output
+    assert_equal "true\nfalse\ntrue\n", output
   end
 
   def test_greater_than
@@ -76,6 +85,16 @@ class PotatoTest < Minitest::Test
     POTATO
     
     assert_equal "false\ntrue\nfalse\n", output
+  end
+
+  def test_lesser_than
+    output = run_potato(<<~POTATO)
+      say 2 smaller? 2
+      say 4 smaller? 2
+      say 1 smaller? 2
+    POTATO
+    
+    assert_equal "false\nfalse\ntrue\n", output
   end
 
   def test_or

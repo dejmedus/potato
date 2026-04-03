@@ -22,7 +22,8 @@ module Potato
       end
     end
 
-    OPERATORS = { ADD: 10, EQUALS_EQUALS: 5, GREATER_THAN: 5, GREATER_EQUALS: 5, OR: 2, AND: 3, IF: 1, ELSE: 0 }
+    EXPR_START = [:NUMBER, :STRING, :VARIABLE, :BOOLEAN, :NULL, :LPAREN]
+    OPERATORS = { ADD: 10, EQUALS_EQUALS: 5, NOT_EQUALS: 5, GREATER_THAN: 5, GREATER_EQUALS: 5, LESSER_THAN: 5, LESSER_EQUALS: 5, OR: 2, AND: 3, IF: 1, ELSE: 0 }
 
     def self.ast(tokens, l)
       case tokens[0]&.type
@@ -87,6 +88,10 @@ module Potato
       loop do
         node_type = tokens[index]&.type
         break unless node_type
+
+        if EXPR_START.include?(node_type)
+          err "Missing operator between expressions", l
+        end
 
         if node_type == :IF && cur_precedence < 1
           index += 1  # consume ?

@@ -39,8 +39,16 @@ module Potato
         write(f, 0x02)
       when IR::Equality
         write(f, 0x07)
+      when IR::NotEquality
+        write(f, 0x15)
       when IR::GreaterThan
         write(f, 0x0D)
+      when IR::LesserThan
+        write(f, 0x12)
+      when IR::GreaterEquals
+        write(f, 0x13)
+      when IR::LesserEquals
+        write(f, 0x14)
       when IR::Or
         write(f, 0x0E)
       when IR::And

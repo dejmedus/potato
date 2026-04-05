@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🥔 Potato Playground</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@ruby/wasm-wasi@2.8.1/dist/browser.umd.js"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="loading-overlay">
+      <div class="big-logo">
+        <span class="lp">p</span><span class="lo">o</span
+        ><span class="lt1">t</span><span class="la">a</span
+        ><span class="lt2">t</span><span class="lo2">o</span>
+      </div>
+      <div class="bar-wrap"><div class="bar-fill" id="load-bar"></div></div>
+      <div class="load-msg" id="load-msg">Fetching Ruby runtime…</div>
+    </div>
+
+    <header>
+      <div>
+        <div class="logo">
+          <span class="lp">p</span><span class="lo">o</span
+          ><span class="lt1">t</span><span class="la">a</span
+          ><span class="lt2">t</span><span class="lo2">o</span>
+        </div>
+        <div class="tagline">playground</div>
+      </div>
+      <div class="header-right">
+        <div id="status-badge" class="loading">Loading…</div>
+        <button id="run-btn" disabled>▶ Run</button>
+      </div>
+    </header>
+
+    <main>
+      <div class="pane">
+        <div id="editor-wrap"></div>
+      </div>
+      <div class="pane" id="output-pane">
+        <div id="output-wrap">
+          <pre
+            id="output"
+          ><span class="placeholder">Run your code to see output here…</span></pre>
+        </div>
+      </div>
+    </main>
+
+    <script type="module" src="index.js"></script>
+  </body>
+</html>

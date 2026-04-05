@@ -1,9 +1,11 @@
+require 'stringio'
+
 module Potato
   class Compiler
-    def self.compile(scope, ir, print: false)
-      File.open("potat.o", "wb") do |f|
-        write_ir(ir, f)
-      end
+    def self.compile(scope, ir)
+      buf = StringIO.new("".b)
+      write_ir(ir, buf)
+      buf.string
     end
 
     def self.write_ir(ir, f)

@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 require_relative '../lib/potato'
 
+path = ARGV.find { |a| !a.start_with?("-") } || "./main.potato"
 options = { ast: ARGV.include?("--ast"), scope: ARGV.include?("--scope"), ir: ARGV.include?("--ir") }
-Potato.run_file("./main.potato", options)
-PotatoVM.run()
+Potato.run_file(path, options)

@@ -1,6 +1,6 @@
 module PotatoVM
   class VM
-
+    
     # otherwise we can't compare 
     # to real nil values
     Null = Object.new
@@ -12,8 +12,8 @@ module PotatoVM
       value
     end
 
-    def self.run
-      @bytecode = File.binread("potat.o").bytes
+    def self.run(bytecode)
+      @bytecode = bytecode.bytes
       @pos = 0
 
       stack = []

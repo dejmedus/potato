@@ -1,6 +1,0 @@
-#!/usr/bin/env ruby
-require_relative '../lib/potato'
-
-file = ARGV[0]
-options = { ast: ARGV.include?("--ast") }
-Potato.run_file(file, options)

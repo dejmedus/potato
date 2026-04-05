@@ -9,12 +9,12 @@
   --green: #7b6456c9;
   --red: #e06060;
   --output-bg: #141010;
-  --p-color: #e05555;
-  --o-color: #e08844;
-  --t1-color: #d4c040;
-  --a-color: #70c060;
-  --t2-color: #50aadd;
-  --o2-color: #9966dd;
+  --p-color: #ff6060;
+  --o-color: #ffb326;
+  --t1-color: #fa95ff;
+  --a-color: #63f221;
+  --t2-color: #45daff;
+  --o2-color: #b255ff;
 }
 * {
   box-sizing: border-box;
@@ -155,19 +155,13 @@ main {
   overflow: auto !important;
 }
 .cm-content {
-  caret-color: var(--accent);
+  caret-color: var(--text);
   background: var(--surface);
   color: var(--text);
 }
 .cm-line {
   padding: 0 16px !important;
   line-height: 1.75;
-}
-.cm-cursor {
-  border-left-color: var(--accent) !important;
-}
-.cm-selectionBackground {
-  background: rgba(232, 160, 72, 0.18) !important;
 }
 .cm-gutters {
   display: none !important;
@@ -176,11 +170,48 @@ main {
   background: rgba(255, 255, 255, 0.025) !important;
 }
 
+.cm-potato-comment {
+  color: #888888;
+  font-style: italic;
+}
+.cm-potato-string,
+.cm-potato-number {
+  color: #c8aa80;
+}
+.cm-potato-keyword {
+  color: #888888;
+}
+.cm-potato-operator {
+  color: #a0886c;
+  font-weight: bold;
+}
+.cm-potato-paren {
+  color: #5a4a38;
+  font-weight: bold;
+}
+.cm-potato-rp {
+  color: #ff6060;
+}
+.cm-potato-ro {
+  color: #ffb326;
+}
+.cm-potato-rt1 {
+  color: #fa95ff;
+}
+.cm-potato-ra {
+  color: #63f221;
+}
+.cm-potato-rt2 {
+  color: #45daff;
+}
+.cm-potato-ro2 {
+  color: #b255ff;
+}
+
 #output-wrap {
   flex: 1;
   overflow: auto;
   background: var(--output-bg);
-  padding: 16px;
   padding: 2em;
 }
 #output {

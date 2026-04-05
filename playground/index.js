@@ -7,56 +7,109 @@ import {
 import {
   defaultKeymap,
   history,
-  historyKeymap
+  historyKeymap,
+  toggleLineComment
 } from "https://esm.sh/@codemirror/commands@6";
 import {
   StreamLanguage,
-  LanguageSupport
+  LanguageSupport,
+  syntaxHighlighting,
+  HighlightStyle
 } from "https://esm.sh/@codemirror/language@6";
+import { tags as t, Tag } from "https://esm.sh/@lezer/highlight@1";
 
-/* syntax highlighting */
-const KEYWORDS = ["say", "gains", "and", "or"];
-const OPS = ["equals?", "bigger?", "atleast?", "is"];
-const RAINBOW = ["ptok-p", "ptok-o", "ptok-t1", "ptok-a", "ptok-t2", "ptok-o2"];
+/* syntax highlight */
+const T = {
+  comment: t.lineComment,
+  string: t.string,
+  number: t.number,
+  keyword: t.keyword,
+  operator: t.operator,
+  paren: t.paren,
+  rp: Tag.define(),
+  ro: Tag.define(),
+  rt1: Tag.define(),
+  ra: Tag.define(),
+  rt2: Tag.define(),
+  ro2: Tag.define(),
+  rtrue: Tag.define(),
+  rfalse: Tag.define()
+};
 
-const potatoStream = StreamLanguage.define({
+const OPERATORS = ["equals?", "bigger?", "atleast?", "gains", "is"];
+const KEYWORDS = ["say", "and", "or"];
+
+const potatoLang = StreamLanguage.define({
   name: "potato",
-  startState: () => ({ ri: -1 }),
+  languageData: {
+    commentTokens: { line: "🍠 " }
+  },
+  startState: () => ({ rainbow: -1 }),
   token(stream, state) {
-    if (state.ri >= 0 && state.ri < 6) {
-      const cls = RAINBOW[state.ri];
+    if (state.rainbow >= 0) {
+      const keys = ["rp", "ro", "rt1", "ra", "rt2", "ro2"];
+      const key = keys[state.rainbow];
       stream.next();
-      state.ri = state.ri + 1 < 6 ? state.ri + 1 : -1;
-      return cls;
+      state.rainbow = state.rainbow + 1 < 6 ? state.rainbow + 1 : -1;
+      return key;
     }
+
     if (stream.eatSpace()) return null;
-    if (stream.match(/🍠.*/)) return "ptok-comment";
-    if (stream.match(/"(?:\\.|[^"])*"/)) return "ptok-string";
-    if (stream.match(/\d+(\.\d+)?/)) return "ptok-number";
-    if (stream.match(/:\)/)) return "ptok-operator";
-    if (stream.match(/:\(/)) return "ptok-operator";
+    if (stream.match(/🍠.*/)) return "comment";
+    if (stream.match(/"(?:\\.|[^"])*"/)) return "string";
+    if (stream.match(/\d+(\.\d+)?/)) return "number";
+    if (stream.match(/:\)/)) return "rtrue";
+    if (stream.match(/:\(/)) return "rfalse";
+
     if (stream.match(/\bpotato\b/, false)) {
-      state.ri = 1;
+      state.rainbow = 1;
       stream.next();
-      return "ptok-p";
+      return "rp";
     }
-    for (const op of OPS) {
-      if (stream.match(op)) return "ptok-operator";
-    }
-    for (const kw of KEYWORDS) {
-      if (stream.match(new RegExp(`\\b${kw}\\b`))) return "ptok-keyword";
-    }
-    if (stream.match(/[()]/)) return "ptok-paren";
+
+    for (const op of OPERATORS) if (stream.match(op)) return "operator";
+    for (const kw of KEYWORDS)
+      if (stream.match(new RegExp(`\\b${kw}\\b`))) return "keyword";
+    if (stream.match(/[()]/)) return "paren";
+
     stream.next();
     return null;
-  }
+  },
+  tokenTable: T
 });
+
+const potatoHighlight = HighlightStyle.define([
+  { tag: t.lineComment, color: "#a08969", fontStyle: "italic" },
+  { tag: t.string, color: "#c8aa80" },
+  { tag: t.number, color: "#c8aa80" },
+  { tag: t.keyword, color: "#674e35" },
+  { tag: t.operator, color: "#a07850" },
+  { tag: t.paren, color: "#5a4a38" },
+  { tag: T.rp, color: "#ff6060" },
+  { tag: T.ro, color: "#ffb326" },
+  { tag: T.rt1, color: "#fa95ff" },
+  { tag: T.ra, color: "#63f221" },
+  { tag: T.rt2, color: "#45daff" },
+  { tag: T.ro2, color: "#b255ff" },
+  { tag: T.rtrue, color: "#aa8dff" },
+  { tag: T.rfalse, color: "#6bceff" }
+]);
 
 /* editor */
 const SAMPLE = `🍠 Welcome to the Potato Playground!
 
 greeting is "Hello from potato!"
 say greeting
+
+add (a, b) a potato b
+say add(2, 2)
+
+happy is :)
+say happy ? "yay" : "oh no"
+
+📢 is "what do we want? "
+💬 is "emoji vars!!"
+say 📢 potato 💬
 `;
 
 let editor;
@@ -77,10 +130,12 @@ editor = new EditorView({
             return true;
           }
         },
+        { key: "Mod-/", run: toggleLineComment },
         ...defaultKeymap,
         ...historyKeymap
       ]),
-      new LanguageSupport(potatoStream),
+      new LanguageSupport(potatoLang),
+      syntaxHighlighting(potatoHighlight),
       highlightActiveLine(),
       EditorView.theme({
         "&": {
@@ -89,7 +144,17 @@ editor = new EditorView({
           color: "var(--text)"
         },
         ".cm-scroller": { overflow: "auto" },
-        ".cm-focused": { outline: "none" }
+        ".cm-focused": { outline: "none" },
+        ".cm-content ::selection": {
+          backgroundColor: "rgba(145, 129, 109, 0.45)"
+        },
+        ".cm-content": {
+          caretColor: "#a59a85"
+        },
+        "&.cm-focused .cm-cursor-primary": {
+          borderLeftColor: "#675941b4",
+          borderLeftWidth: "2.5px"
+        }
       })
     ]
   }),
@@ -110,7 +175,6 @@ function setLoad(pct, msg) {
 }
 
 let rubyVM = null;
-let interpreterBundle = null;
 
 async function initRuby() {
   try {
@@ -121,41 +185,33 @@ async function initRuby() {
     setLoad(10, "Fetching Ruby runtime + Potato bundle…");
     const WASM_URL =
       "https://cdn.jsdelivr.net/npm/@ruby/4.0-wasm-wasi@2.8.1/dist/ruby+stdlib.wasm";
-
     const BUNDLE_URL = "./potato_bundle.rb";
 
-    const wasmPromise = (async () => {
-      const res = await fetch(WASM_URL);
-      if (!res.ok) throw new Error(`WASM fetch failed: ${res.status}`);
-      const buf = await res.arrayBuffer();
-      return await WebAssembly.compile(buf);
-    })();
-
-    const bundlePromise = fetch(BUNDLE_URL).then((r) => {
-      if (!r.ok) throw new Error(`Bundle missing: ${r.status}`);
-      return r.text();
-    });
-
     const [wasmModule, bundleText] = await Promise.all([
-      wasmPromise,
-      bundlePromise
+      fetch(WASM_URL)
+        .then((r) => {
+          if (!r.ok) throw new Error(`WASM fetch failed: ${r.status}`);
+          return r.arrayBuffer();
+        })
+        .then((b) => WebAssembly.compile(b)),
+      fetch(BUNDLE_URL).then((r) => {
+        if (!r.ok) throw new Error(`Bundle missing: ${r.status}`);
+        return r.text();
+      })
     ]);
-
-    interpreterBundle = bundleText;
 
     setLoad(80, "Booting Ruby VM…");
     const { vm } = await DefaultRubyVM(wasmModule);
     rubyVM = vm;
 
     setLoad(92, "Loading Potato interpreter…");
-
     rubyVM.eval(`
       require 'stringio'
       def abort(msg = nil)
         raise RuntimeError, msg.to_s.gsub(/\\e\\[[0-9;]*m/, '')
       end
     `);
-    rubyVM.eval(interpreterBundle);
+    rubyVM.eval(bundleText);
 
     setLoad(100, "Ready!");
     setTimeout(() => {
@@ -182,27 +238,13 @@ function execute(source) {
 
   setTimeout(() => {
     try {
-      rubyVM.eval(`
-        $__out = StringIO.new
-        $stdout = $__out
-      `);
-
+      rubyVM.eval(`$__out = StringIO.new; $stdout = $__out`);
       const escaped = source
         .replace(/\\/g, "\\\\")
         .replace(/"/g, '\\"')
-        .replace(/#{/g, "\#{");
-
+        .replace(/#{/g, "\\#{");
       rubyVM.eval(`Potato.run("${escaped}")`);
-
-      const out = rubyVM
-        .eval(
-          `
-        $stdout = STDOUT
-        $__out.string
-      `
-        )
-        .toString();
-
+      const out = rubyVM.eval(`$stdout = STDOUT; $__out.string`).toString();
       outputEl.className = "";
       outputEl.textContent = out.length > 0 ? out : "(no output)";
     } catch (err) {
@@ -210,7 +252,6 @@ function execute(source) {
         rubyVM.eval("$stdout = STDOUT");
       } catch {}
       outputEl.className = "is-error";
-
       outputEl.textContent =
         "Error:\n" + err.message.replace(/\x1b\[[0-9;]*m/g, "");
     }

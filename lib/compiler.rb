@@ -1,5 +1,3 @@
-require 'stringio'
-
 module Potato
   class Compiler
     def self.compile(scope, ir)

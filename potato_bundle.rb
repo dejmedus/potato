@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 # AUTO-GENERATED — do not edit by hand.
 # Run `rake bundle` to regenerate from lib/*.rb
-# Generated: 2026-04-04 20:12:02
+# Generated: 2026-04-05 11:50:34
 
 # ── printer.rb ────────────────────────────────────────────────────────────────
 
@@ -582,8 +582,6 @@ end
 
 
 # ── compiler.rb ───────────────────────────────────────────────────────────────
-
-require 'stringio'
 
 module Potato
   class Compiler

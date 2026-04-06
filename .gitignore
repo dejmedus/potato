@@ -4,5 +4,6 @@
 references.md
 **/*.vsix
 
-main.potato
+*.potato
 potat.o
+cellar

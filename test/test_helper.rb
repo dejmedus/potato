@@ -8,7 +8,7 @@ module PotatoTestHelper
       f.write(source)
       f.flush
 
-      `./bin/potat #{f.path} 2>&1`
+      `./bin/potat #{f.path} --no-cache 2>&1`
     end
   end
 end

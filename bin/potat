@@ -2,5 +2,5 @@
 require_relative '../lib/potato'
 
 path = ARGV.find { |a| !a.start_with?("-") } || "./main.potato"
-options = { ast: ARGV.include?("--ast"), scope: ARGV.include?("--scope"), ir: ARGV.include?("--ir") }
+options = { ast: ARGV.include?("--ast"), scope: ARGV.include?("--scope"), ir: ARGV.include?("--ir"), no_cache: ARGV.include?("--no-cache") }
 Potato.run_file(path, options)

@@ -1,0 +1,4 @@
+source "https://rubygems.org"
+
+gem "potato_lang", "0.0.0"
+gem "language_server-protocol"

@@ -7,3 +7,7 @@ references.md
 *.potato
 potat.o
 cellar
+
+language-extension/node_modules
+language-extension/out
+language-extension/server/vendor

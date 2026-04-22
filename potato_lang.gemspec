@@ -5,6 +5,6 @@ Gem::Specification.new do |s|
   s.description = ""
   s.authors     = ["Julia B"]
   s.email       = "hi@juliab.dev"
-  s.files       = ["lib/potato.rb"]
+  s.files = Dir.glob("lib/**/*.rb")
   s.license       = "MIT"
 end

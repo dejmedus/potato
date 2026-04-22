@@ -4,7 +4,7 @@
   "description": "🥔🥔🥔",
   "version": "0.0.1",
   "engines": {
-    "vscode": "^1.106.0"
+    "vscode": "^1.116.0"
   },
   "publisher": "dejmedus",
   "icon": "potato.png",
@@ -12,6 +12,21 @@
     "Programming Languages"
   ],
   "repository": "github.com/dejmedus/potato",
+  "main": "./out/client.js",
+  "activationEvents": [
+    "onLanguage:potato"
+  ],
+  "files": [
+    "out/**",
+    "server/**",
+    "syntaxes/**",
+    "language-configuration.json",
+    "potato.png"
+  ],
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ."
+  },
   "contributes": {
     "languages": [
       {
@@ -27,8 +42,8 @@
         ],
         "configuration": "./language-configuration.json",
         "icon": {
-          "light": "./potato.svg",
-          "dark": "./potato.svg"
+          "light": "./potato.png",
+          "dark": "./potato.png"
         }
       }
     ],
@@ -40,6 +55,10 @@
       }
     ],
     "configurationDefaults": {
+      "[potato]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "dejmedus.potato"
+      },
       "editor.tokenColorCustomizations": {
         "textMateRules": [
           {
@@ -134,5 +153,11 @@
         ]
       }
     }
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.116.0"
   }
 }

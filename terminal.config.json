@@ -23,22 +23,40 @@
     },
     {
       "tab": "lang ext",
-      "commands": ["cd language-extension"],
+      "commands": ["*cd language-extension"],
       "icon": "cloud"
+    },
+    {
+      "tab": "lsp",
+      "commands": ["*cd language-extension/server"],
+      "icon": "server",
+      "header": "bundle install"
     }
   ],
   "lang-ext": [
     {
-      "tab": "lang ext",
+      "tab": "potato",
       "commands": [
-        "vsce package",
-        "code --install-extension potato-0.0.1.vsix",
-        "code ."
+        "gem build potato_lang.gemspec",
+        "mkdir -p language-extension/server/vendor/cache && cp potato_lang-0.0.0.gem language-extension/server/vendor/cache/"
       ]
     },
     {
-      "tab": "potato",
-      "commands": ["code -r ."]
+      "tab": "lsp",
+      "commands": [
+        "rm -rf vendor/bundle/ruby/*/gems/potato_lang-0.0.0",
+        "bundle config set --local path vendor/bundle",
+        "bundle install",
+        "bundle package"
+      ]
+    },
+    {
+      "tab": "lang ext",
+      "commands": [
+        "npm run compile",
+        "vsce package",
+        "code --install-extension potato-0.0.1.vsix"
+      ]
     }
   ],
   "test": [

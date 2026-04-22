@@ -23,7 +23,7 @@ class PotatoTest < Minitest::Test
 
   def test_boolean_equality_true
     output = run_potato(<<~POTATO)
-      result is :) equals? :)
+      result is :) is? :)
       say result
     POTATO
     
@@ -32,7 +32,7 @@ class PotatoTest < Minitest::Test
 
   def test_boolean_equality_false
     output = run_potato(<<~POTATO)
-      result is :) equals? :(
+      result is :) is? :(
       say result
     POTATO
     
@@ -41,7 +41,7 @@ class PotatoTest < Minitest::Test
 
   def test_equality
     output = run_potato(<<~POTATO)
-      result is 2 potato 2 equals? 4 potato 10
+      result is 2 potato 2 is? 4 potato 10
       say result
     POTATO
     
@@ -151,7 +151,7 @@ class PotatoTest < Minitest::Test
       x is x potato 10 potato 10
       say x
 
-      say 10 potato 10 equals? 20
+      say 10 potato 10 is? 20
     POTATO
     
     assert_equal "25\ntrue\n", output
@@ -235,7 +235,7 @@ class PotatoTest < Minitest::Test
 
   def test_recursive_function_calls
     output = run_potato(<<~POTATO)
-      add (num) num gains 2, num equals? 4 ? add(num) : num
+      add (num) num gains 2, num is? 4 ? add(num) : num
       say add(2)
     POTATO
 
@@ -264,10 +264,10 @@ class PotatoTest < Minitest::Test
 
   def test_elseif_statement
     output = run_potato(<<~POTATO)
-      say "a" equals? "a" ? "a" : "a" equals? "c" ? "nope" : "nope"
-      say "a" equals? "b" ? "nope" : "a" equals? "a" ? "a" : "nope"
-      say "a" equals? "b" ? "nope" : "a" equals? "c" ? "nope" : "a"
-      say "a" equals? "b" ? "nope" : "a" equals? "c" ? "nope"
+      say "a" is? "a" ? "a" : "a" is? "c" ? "nope" : "nope"
+      say "a" is? "b" ? "nope" : "a" is? "a" ? "a" : "nope"
+      say "a" is? "b" ? "nope" : "a" is? "c" ? "nope" : "a"
+      say "a" is? "b" ? "nope" : "a" is? "c" ? "nope"
     POTATO
 
     assert_equal "a\na\na\nnil\n", output

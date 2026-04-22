@@ -51,16 +51,16 @@ Adds numbers and concatenates strings
 "hi" potato " bob" 
 ```
 
-####  `equals?`, `not?`
+####  `is?`, `not?`
 
 `:)` if both are equal, otherwise `:(` 
 
 ```potato
-:) equals? :)    🍠 true
-:) equals? :(    🍠 false
-10 equals? 10    🍠 true
-"a" equals? "b"  🍠 false
-10 equals? "10"  🍠 false
+:) is? :)    🍠 true
+:) is? :(    🍠 false
+10 is? 10    🍠 true
+"a" is? "b"  🍠 false
+10 is? "10"  🍠 false
 
 10 not? 10    🍠 false
 10 not? 20    🍠 true

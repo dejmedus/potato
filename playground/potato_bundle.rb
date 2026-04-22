@@ -88,7 +88,7 @@ module Potato
         when "gains"  then result << Token.new(:ADD_EQUALS, nil)
         when "or" then result << Token.new(:OR, nil)
         when "and" then result << Token.new(:AND, nil)
-        when "equals?"  then result << Token.new(:EQUALS_EQUALS, nil)
+        when "is?"  then result << Token.new(:EQUALS_EQUALS, nil)
         when "bigger?"  then result << Token.new(:GREATER_THAN, nil)
         when "smaller?"  then result << Token.new(:LESSER_THAN, nil)
         when "atleast?"  then result << Token.new(:GREATER_EQUALS, nil)

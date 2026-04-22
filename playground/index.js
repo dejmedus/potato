@@ -36,7 +36,7 @@ const T = {
   rfalse: Tag.define()
 };
 
-const OPERATORS = ["equals?", "bigger?", "atleast?", "gains", "is"];
+const OPERATORS = ["is?", "bigger?", "atleast?", "gains", "is"];
 const KEYWORDS = ["say", "and", "or"];
 
 const potatoLang = StreamLanguage.define({

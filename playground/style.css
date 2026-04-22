@@ -20,6 +20,11 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+
+  cursor:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='48' viewport='0 0 100 100' style='font-size:24px;'><text y='50%'>🥔</text></svg>")
+      16 0,
+    auto;
 }
 body {
   background: var(--bg);
@@ -28,10 +33,6 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  cursor:
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='48' viewport='0 0 100 100' style='font-size:24px;'><text y='50%'>🥔</text></svg>")
-      16 0,
-    auto;
 }
 
 header {
@@ -111,7 +112,6 @@ header {
   font-size: 0.85rem;
   letter-spacing: 0.05em;
   border-radius: 4px;
-  cursor: pointer;
   transition:
     background 0.15s,
     transform 0.1s;

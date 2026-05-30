@@ -22,7 +22,7 @@ module Potato
       end
     end
 
-    EXPR_START = [:NUMBER, :STRING, :VARIABLE, :BOOLEAN, :NULL, :LPAREN]
+    EXPR_START = [:NUMBER, :STRING, :VARIABLE, :BOOLEAN, :NONE, :LPAREN]
     OPERATORS = { ADD: 10, EQUALS_EQUALS: 5, NOT_EQUALS: 5, GREATER_THAN: 5, GREATER_EQUALS: 5, LESSER_THAN: 5, LESSER_EQUALS: 5, OR: 2, AND: 3, IF: 1, ELSE: 0 }
 
     def self.ast(tokens, l)
@@ -141,7 +141,7 @@ module Potato
       when :VARIABLE then AST::Node.new(:variable, token.value, [], l)
       when :STRING   then AST::Node.new(:string, token.value, [])
       when :BOOLEAN  then AST::Node.new(:boolean, token.value == ":)", [])
-      when :NULL     then AST::Node.new(:null, nil, [])
+      when :NONE     then AST::Node.new(:none, nil, [])
       else err "Unknown expression: #{token.type}"
       end
     end

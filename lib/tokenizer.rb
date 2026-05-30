@@ -25,7 +25,7 @@ module Potato
           break
         when "say"   then result << Token.new(:PRINT, nil)
         when "potato" then result << Token.new(:ADD, nil)
-        when "nothing" then result << Token.new(:NULL, nil)
+        when "nothing" then result << Token.new(:NONE, nil)
         when "is"     then result << Token.new(:EQUALS, nil)
         when "(" then result << Token.new(:LPAREN, nil)
         when ")" then result << Token.new(:RPAREN, nil)

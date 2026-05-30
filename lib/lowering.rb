@@ -100,7 +100,7 @@ module Potato
         jump_end_index = @instructions.size
         write IR::Jump.new(nil) 
         @instructions[jump_false_index].target = next_free_byte  # false 
-        write IR::Push.new(:null, nil)
+        write IR::Push.new(:none, nil)
         @instructions[jump_end_index].target = next_free_byte
       end
     end
@@ -116,8 +116,8 @@ module Potato
       when :string
         write IR::Push.new(:string, node.value)
 
-      when :null
-        write IR::Push.new(:null, nil)
+      when :none
+        write IR::Push.new(:none, nil)
 
       when :print
         node.children.each { |child| ir(child) }

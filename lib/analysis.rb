@@ -83,7 +83,7 @@ module Potato
 
     def infer_type(node)
       case node.type
-      when :number, :string, :boolean, :nil
+      when :number, :string, :boolean, :none
         node.type
       when :variable
         sym = @cur_scope.lookup(node.value)

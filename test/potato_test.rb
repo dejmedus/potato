@@ -251,7 +251,7 @@ class PotatoTest < Minitest::Test
       say y
     POTATO
 
-    assert_equal "true\nnil\n", output
+    assert_equal "true\nnone\n", output
   end
 
   def test_if_else_statement
@@ -270,6 +270,6 @@ class PotatoTest < Minitest::Test
       say "a" is? "b" ? "nope" : "a" is? "c" ? "nope"
     POTATO
 
-    assert_equal "a\na\na\nnil\n", output
+    assert_equal "a\na\na\nnone\n", output
   end
 end

@@ -26,7 +26,7 @@ module Potato
       bytes
     end
 
-    PotatoVM::VM.run(bytes)
+    PotatoVM::VM.new(bytes).run
   end
 
   def self.run_file(path, options = {})

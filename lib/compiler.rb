@@ -1,6 +1,6 @@
 module Potato
   class Compiler
-    def self.compile(scope, ir)
+    def self.compile(ir)
       buf = StringIO.new("".b)
       write_ir(ir, buf)
       buf.string
@@ -18,15 +18,15 @@ module Potato
     def self.ir(instruction, f)
       case instruction
       when IR::Push
-        case instruction.value
-        when Integer
+        case instruction.type
+        when :number
           write(f, 0x01, instruction.value)
-        when String
+        when :string
           write(f, 0x06, instruction.value.bytesize)
           f.write(instruction.value)
-        when TrueClass, FalseClass
+        when :boolean
           write(f, 0x08, instruction.value ? 1 : 0)
-        when NilClass
+        when :null
           write(f, 0x11)
         end
       when IR::LoadVar

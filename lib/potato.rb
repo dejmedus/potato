@@ -21,7 +21,7 @@ module Potato
       PrintTree.print(scope) if options[:scope]
       ir = Lowering.lower(ast, scope)
       PrintTree.print(ir) if options[:ir]
-      bytes = Compiler.compile(scope, ir)
+      bytes = Compiler.compile(ir)
       Cache.save(path, bytes) unless options[:no_cache]
       bytes
     end

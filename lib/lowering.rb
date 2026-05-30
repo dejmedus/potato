@@ -1,7 +1,7 @@
 
 module Potato
   class IR
-    Push = Struct.new(:value)
+    Push = Struct.new(:type, :value)
     LoadVar = Struct.new(:index)
     LoadCaptured = Struct.new(:index)
     StoreVar = Struct.new(:index)
@@ -100,7 +100,7 @@ module Potato
         jump_end_index = @instructions.size
         write IR::Jump.new(nil) 
         @instructions[jump_false_index].target = next_free_byte  # false 
-        write IR::Push.new(nil)
+        write IR::Push.new(:null, nil)
         @instructions[jump_end_index].target = next_free_byte
       end
     end
@@ -111,13 +111,13 @@ module Potato
         func_ir(node)
 
       when :number, :boolean
-        write IR::Push.new(node.value)
+        write IR::Push.new(node.type, node.value)
 
       when :string
-        write IR::Push.new(node.value)
+        write IR::Push.new(:string, node.value)
 
       when :null
-        write IR::Push.new(nil)
+        write IR::Push.new(:null, nil)
 
       when :print
         node.children.each { |child| ir(child) }

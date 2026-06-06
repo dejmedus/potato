@@ -26,7 +26,7 @@ module Potato
           f.write(instruction.value)
         when :boolean
           write(f, 0x08, instruction.value ? 1 : 0)
-        when :null
+        when :none
           write(f, 0x11)
         end
       when IR::LoadVar

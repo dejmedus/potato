@@ -129,7 +129,7 @@ module Potato
         err "Expected )", l unless close
 
         node = AST::Node.new(:func_call, node.value, parse_params(tokens[index+1...close], l), l)
-        index = close + 1 # consume remaining
+        index = close + 1 # consume )
       end
 
       [node, index]

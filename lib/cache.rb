@@ -13,6 +13,7 @@ module Cache
 
       mtime, size = f.read(16).unpack("Q>Q>")
       stat = File.stat(path)
+      # OS gives us mtime, thanks OS
       return nil unless mtime == stat.mtime.to_i && size == stat.size
 
       f.read

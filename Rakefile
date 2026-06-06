@@ -38,7 +38,6 @@ def build_bundle
   parts = files_in_order.map do |path|
     abort "Missing file: #{path}" unless File.exist?(path)
     src = File.read(path)
-    # Strip require_relative lines — everything is inlined
     src = src.gsub(require_relative_re, "")
     "# ── #{File.basename(path)} #{"─" * [0, 74 - File.basename(path).length].max}\n\n#{src.strip}\n"
   end

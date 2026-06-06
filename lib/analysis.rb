@@ -1,5 +1,6 @@
 module Potato
-  Symbol = Struct.new(:name, :locals_index, :kind, :bytecode_location, :type)
+  # kind can be :local, :captured, :param, or :function
+  Symbol = Struct.new(:name, :stack_frame_slot, :kind, :bytecode_location, :type)
 
   class Scope
     attr_reader :parent, :children, :symbol_table, :name
@@ -26,7 +27,7 @@ module Potato
       parent_lookup = parent&.lookup(name)
       if parent_lookup
         return parent_lookup if parent_lookup.kind == :function
-        add_to_scope(name, kind: :captured, index: parent_lookup.locals_index, type: parent_lookup.type)
+        add_to_scope(name, kind: :captured, index: parent_lookup.stack_frame_slot, type: parent_lookup.type)
         return symbol_table[name]
       end
     end

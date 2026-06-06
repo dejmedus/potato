@@ -125,17 +125,18 @@ module Potato
 
       when :variable
         symbol = @cur_scope.lookup(node.value)
+        err "Undefined variable: #{node.value}", node.line if symbol.nil?
         
         if symbol.kind == :captured
-          write IR::LoadCaptured.new(symbol.locals_index)
+          write IR::LoadCaptured.new(symbol.stack_frame_slot)
         else
-          write IR::LoadVar.new(symbol.locals_index)
+          write IR::LoadVar.new(symbol.stack_frame_slot)
         end
 
       when :assign
         ir(node.children[1])
         var_name = node.children[0].value
-        index = @cur_scope.lookup(var_name)&.locals_index
+        index = @cur_scope.lookup(var_name)&.stack_frame_slot
         write IR::StoreVar.new(index)
 
       when :conditional

@@ -144,7 +144,12 @@ module Potato
 
       when :func_call
         node.children.each { |child| ir(child) }
-        write IR::Call.new(@cur_scope.lookup(node.value).bytecode_location, node.children.size)
+        symbol = @cur_scope.lookup(node.value)
+        err "Is this defined?: #{node.value}", node.line if symbol.nil?
+        err "Should be a function: #{node.value}", node.line unless symbol.kind == :function
+        err "Can't find function: #{node.value}", node.line if symbol.bytecode_location.nil?
+
+        write IR::Call.new(symbol.bytecode_location, node.children.size)
 
       when *OPERATORS.keys
         node.children.each { |child| ir(child) }

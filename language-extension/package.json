@@ -13,9 +13,7 @@
   ],
   "repository": "github.com/dejmedus/potato",
   "main": "./out/client.js",
-  "activationEvents": [
-    "onLanguage:potato"
-  ],
+  "activationEvents": [],
   "files": [
     "out/**",
     "server/**",
@@ -44,6 +42,27 @@
         "icon": {
           "light": "./potato.png",
           "dark": "./potato.png"
+        }
+      }
+    ],
+    "taskDefinitions": [
+      {
+        "type": "potato"
+      }
+    ],
+    "problemMatchers": [
+      {
+        "name": "potato",
+        "owner": "potato",
+        "fileLocation": [
+          "relative",
+          "${workspaceFolder}"
+        ],
+        "pattern": {
+          "regexp": "^(.+):(\\d+):\\s+error:\\s+(.+)$",
+          "file": 1,
+          "line": 2,
+          "message": 3
         }
       }
     ],

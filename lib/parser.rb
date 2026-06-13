@@ -15,7 +15,7 @@ module Potato
   class Parser
     def self.parse(source)
       source.lines.each_with_index.with_object([]) do |(line, index), nodes|
-        tokens = Tokenizer.tokenize(line)
+        tokens = Tokenizer.tokenize(line, index + 1)
         next if tokens.empty?
         node = ast(tokens, index + 1)
         nodes << node if node
@@ -100,7 +100,7 @@ module Potato
 
           if tokens[index]&.type == :ELSE
             index += 1  # consume :
-            false_branch, index = parse_expr(tokens, index, 0)
+            false_branch, index = parse_expr(tokens, index, 0, l)
             left = AST::Node.new(:conditional, nil, [left, true_branch, false_branch], l)
           else
             left = AST::Node.new(:conditional, nil, [left, true_branch])
@@ -136,6 +136,8 @@ module Potato
     end
 
     def self.parse_token(token, l = nil)
+      err "Should this be an expression?", l if token.nil?
+
       case token.type
       when :NUMBER   then AST::Node.new(:number, token.value, [])
       when :VARIABLE then AST::Node.new(:variable, token.value, [], l)

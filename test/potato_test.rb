@@ -272,4 +272,22 @@ class PotatoTest < Minitest::Test
 
     assert_equal "a\na\na\nnone\n", output
   end
+
+  def test_static_undefined_function_call
+    output = run_potato(<<~POTATO)
+      add2 (a, b) a potato b
+      say add3 (2, 2)
+    POTATO
+
+    assert_includes output, "main.potato:2: error: Is this defined?: add3"
+  end
+
+  def test_static_non_function_call
+    output = run_potato(<<~POTATO)
+      x is 2
+      say x()
+    POTATO
+
+    assert_includes output, "main.potato:2: error: Should be a function: x"
+  end
 end

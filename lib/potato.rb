@@ -35,7 +35,6 @@ module Potato
 end
 
 def err(msg, line_num = nil)
-  line = line_num ? "L#{line_num} " : ""
-  raise "#{line}\e[31m#{msg}\e[0m"
+  raise "main.potato:#{line_num || 0}: error: #{msg}"
 end
 

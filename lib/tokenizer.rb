@@ -13,7 +13,7 @@ module Potato
   end
 
   class Tokenizer
-    def self.tokenize(line)
+    def self.tokenize(line, line_num = nil)
       lexemes = line.scan(/"(?:\\.|[^"])*"|:\)|:\(|[(),]|[^\s(),]+/).reject(&:empty?)
       var_regex = /\A(?:[_\p{L}\p{Extended_Pictographic}])(?:[\p{Word}\p{Extended_Pictographic}\u200D\uFE0F]*)\z/u
       
@@ -46,7 +46,7 @@ module Potato
         when ":(" then result << Token.new(:BOOLEAN, token)
         when ":)" then result << Token.new(:BOOLEAN, token)
         when var_regex then result << Token.new(:VARIABLE, token)
-        else err "Unknown token: #{token}"
+        else err "Unknown token: #{token}", line_num
         end
       end
       

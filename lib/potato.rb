@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'stringio'
 require_relative "printer"
 require_relative "cache"
@@ -10,31 +12,38 @@ require_relative "compiler"
 require_relative "vm"
 
 module Potato
-  def self.run(source, path, options = {})
-    cache = Cache.load(path) unless options[:no_cache]
+  class << self
+    attr_accessor :current_line
 
-    bytes =  cache || begin
-      ast = Parser.parse(source)
-      ast = Desugar.desugar(ast)
-      PrintTree.print(ast) if options[:ast]
-      scope = ScopeTree.build(ast)
-      PrintTree.print(scope) if options[:scope]
-      ir = Lowering.lower(ast, scope)
-      PrintTree.print(ir) if options[:ir]
-      bytes = Compiler.compile(ir)
-      Cache.save(path, bytes) unless options[:no_cache]
-      bytes
+    @current_line = 0
+    @current_file = "main.potato"
+
+    def run_file(path, options = {})
+      @current_file = path.split("/").last
+      run(File.read(path), path, options)
     end
 
-    PotatoVM::VM.new(bytes).run
-  end
+    def err(msg)
+      raise "#{@current_file}:#{@current_line}: error: #{msg}"
+    end
 
-  def self.run_file(path, options = {})
-    run(File.read(path), path, options)
+    def run(source, path, options = {})
+      cache = Cache.load(path) unless options[:no_cache]
+
+      bytes = cache || begin
+        ast = Parser.parse(source)
+        ast = Desugar.desugar(ast)
+        PrintTree.print(ast) if options[:ast]
+        scope = ScopeTree.build(ast)
+        PrintTree.print(scope) if options[:scope]
+        ir = Lowering.lower(ast, scope)
+        PrintTree.print(ir) if options[:ir]
+        bytes = Compiler.compile(ir)
+        Cache.save(path, bytes) unless options[:no_cache]
+        bytes
+      end
+
+      PotatoVM::VM.new(bytes).run
+    end
   end
 end
-
-def err(msg, line_num = nil)
-  raise "main.potato:#{line_num || 0}: error: #{msg}"
-end
-

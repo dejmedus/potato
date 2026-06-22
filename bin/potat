@@ -9,7 +9,9 @@ if ARGV.include?("--version") || ARGV.include?("-v")
 end
 
 path = ARGV.find { |a| !a.start_with?("-") } || "./main.potato"
-options = { ast: ARGV.include?("--ast"), scope: ARGV.include?("--scope"), ir: ARGV.include?("--ir"), no_cache: ARGV.include?("--no-cache") }
+options = { ast: ARGV.include?("--ast"), scope: ARGV.include?("--scope"), ir: ARGV.include?("--ir") }
+options[:no_cache] = ARGV.include?("--no-cache") || options.values.any?
+
 begin
   Potato.run_file(path, options)
 rescue RuntimeError => e

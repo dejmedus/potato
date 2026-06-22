@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 module Potato
   class IR
@@ -23,7 +24,6 @@ module Potato
 
   class Lowering
     def initialize(scope)
-      @global_scope = scope
       @cur_scope = scope
       @instructions = []
       @byte_offset = 0
@@ -35,20 +35,19 @@ module Potato
 
     OPERATORS = {
       equals_equals: IR::Equality,
-      not_equals:    IR::NotEquality,
+      not_equals: IR::NotEquality,
       greater_equals: IR::GreaterEquals,
       lesser_equals: IR::LesserEquals,
-      greater_than:  IR::GreaterThan,
-      lesser_than:   IR::LesserThan,
-      or:            IR::Or,
-      and:           IR::And,
-      add:           IR::Add
-    }
+      greater_than: IR::GreaterThan,
+      lesser_than: IR::LesserThan,
+      or: IR::Or,
+      and: IR::And,
+      add: IR::Add
+    }.freeze
 
     def write(instruction)
       @instructions << instruction
       @byte_offset += case instruction
-
       when IR::Push then instruction.value.is_a?(String) ? 5 + instruction.value.bytesize : instruction.value.nil? ? 1 : 5
       when IR::Call then 9
       when *OPERATORS.values, IR::Print, IR::Return then 1
@@ -56,9 +55,8 @@ module Potato
       end
     end
 
-    def next_free_byte
-      @byte_offset
-    end
+    def next_free_byte = @byte_offset
+    def instruction_index = @instructions.size
 
     def lower(ast)
       ast.each { |node| ir(node) }
@@ -66,13 +64,13 @@ module Potato
     end
 
     def func_ir(node)
-      jump_index = @instructions.size
+      jump_index = instruction_index
       write IR::Jump.new(nil)
 
       func = @cur_scope.lookup(node.value)
       func.bytecode_location = next_free_byte
 
-      @cur_scope = @cur_scope.children.find { |c| c.name == node.value }
+      @cur_scope = @cur_scope.children[node.value]
 
       body_node = node.children[1]
       body_node.children.each { |s| ir(s) }
@@ -83,29 +81,25 @@ module Potato
     end
 
     def conditional_ir(node)
-      ir(node.children[0])  # condition
+      # condition ? true_branch : false_branch
+      ir(node.children[0]) # condition
 
-      jump_false_index = @instructions.size
+      jump_false_index = instruction_index
       write IR::JumpIfFalse.new(nil)
 
-      ir(node.children[1])  # true
+      ir(node.children[1]) # true branch
+      jump_end_index = instruction_index
+      write IR::Jump.new(nil)
 
-      if node.children[2]
-        jump_end_index = @instructions.size
-        write IR::Jump.new(nil)
-        @instructions[jump_false_index].target = next_free_byte
-        ir(node.children[2]) # else true
-        @instructions[jump_end_index].target = next_free_byte
-      else
-        jump_end_index = @instructions.size
-        write IR::Jump.new(nil) 
-        @instructions[jump_false_index].target = next_free_byte  # false 
-        write IR::Push.new(:none, nil)
-        @instructions[jump_end_index].target = next_free_byte
-      end
+      @instructions[jump_false_index].target = next_free_byte
+      node.children[2] ? ir(node.children[2]) : write(IR::Push.new(:none, nil)) # false branch
+
+      @instructions[jump_end_index].target = next_free_byte
     end
 
     def ir(node)
+      Potato.current_line = node.line
+
       case node.type
       when :function
         func_ir(node)
@@ -125,8 +119,8 @@ module Potato
 
       when :variable
         symbol = @cur_scope.lookup(node.value)
-        err "Undefined variable: #{node.value}", node.line if symbol.nil?
-        
+        Potato.err "Not a thing: #{node.value}" if symbol.nil?
+
         if symbol.kind == :captured
           write IR::LoadCaptured.new(symbol.stack_frame_slot)
         else
@@ -145,9 +139,9 @@ module Potato
       when :func_call
         node.children.each { |child| ir(child) }
         symbol = @cur_scope.lookup(node.value)
-        err "Is this defined?: #{node.value}", node.line if symbol.nil?
-        err "Should be a function: #{node.value}", node.line unless symbol.kind == :function
-        err "Can't find function: #{node.value}", node.line if symbol.bytecode_location.nil?
+        Potato.err "Is this defined?: #{node.value}" if symbol.nil?
+        Potato.err "Should be a function: #{node.value}" unless symbol.kind == :function
+        Potato.err "Can't find function: #{node.value}" if symbol.bytecode_location.nil?
 
         write IR::Call.new(symbol.bytecode_location, node.children.size)
 

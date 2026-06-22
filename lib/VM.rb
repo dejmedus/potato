@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PotatoVM
   class VM
     # otherwise we can't compare 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Potato
   class PrintTree
     def self.print(obj)
@@ -8,8 +10,6 @@ module Potato
 
       puts "\n"
     end
-
-    private
 
     def self.walk(obj, indent = 0, prefix = "", is_last = true)
       connector = indent == 0 ? "" : is_last ? "└── " : "├── "

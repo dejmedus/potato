@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Potato
   # kind can be :local, :captured, :param, or :function
   Symbol = Struct.new(:name, :stack_frame_slot, :kind, :bytecode_location, :type)
@@ -7,13 +9,14 @@ module Potato
 
     def initialize(name, parent: nil)
       @parent = parent
-      @children = []
+      @children = {}
       @symbol_table = {}
       @name = name
     end
 
     def add_to_scope(name, kind:, index: nil, type: nil)
       return if symbol_table.key?(name)
+
       symbol_table[name] = Symbol.new(name, index || next_free_index, kind, nil, type)
     end
 
@@ -25,11 +28,11 @@ module Potato
       return symbol_table[name] if symbol_table.key?(name)
 
       parent_lookup = parent&.lookup(name)
-      if parent_lookup
-        return parent_lookup if parent_lookup.kind == :function
-        add_to_scope(name, kind: :captured, index: parent_lookup.stack_frame_slot, type: parent_lookup.type)
-        return symbol_table[name]
-      end
+      return unless parent_lookup
+      return parent_lookup if parent_lookup.kind == :function
+
+      add_to_scope(name, kind: :captured, index: parent_lookup.stack_frame_slot, type: parent_lookup.type)
+      symbol_table[name]
     end
   end
 
@@ -49,11 +52,13 @@ module Potato
     end
 
     def scope_node(node)
+      Potato.current_line = node.line
+
       case node.type
       when :function
         @cur_scope.add_to_scope(node.value, kind: :function)
         new_scope = Scope.new(node.value, parent: @cur_scope)
-        @cur_scope.children << new_scope
+        @cur_scope.children[node.value] = new_scope
         @cur_scope = new_scope
 
         params_node = node.children[0]
@@ -74,7 +79,7 @@ module Potato
 
       when :variable
         if @cur_scope.lookup(node.value).nil?
-          err "Undefined variable: #{node.value}", node.line
+          Potato.err "Not a thing: #{node.value}"
         end
 
       else
@@ -83,6 +88,8 @@ module Potato
     end
 
     def infer_type(node)
+      Potato.current_line = node.line
+
       case node.type
       when :number, :string, :boolean, :none
         node.type
@@ -92,13 +99,16 @@ module Potato
       when :binary
         left = infer_type(node.children[0])
         right = infer_type(node.children[1])
-        case [node.value, left, right]
-        in ["+", :number, :number] then :number
-        in ["+", :string, :string] then :string
-        else err "type mismatch: #{left} #{node.value} #{right}", node.line
+
+        if left == :string || right == :string
+          :string
+        elsif left == :number && right == :number
+          :number
+        else
+          Potato.err "what is this? #{left} #{node.value} #{right}"
         end
       else
-        :unknown   
+        :unknown
       end
     end
   end

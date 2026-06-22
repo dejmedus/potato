@@ -1,0 +1,11 @@
+Style/StringLiterals:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Style/SymbolArray:
+  Enabled: false
+
+Layout/FirstHashElementIndentation:
+  Enabled: false

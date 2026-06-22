@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Potato
   class Desugar
     def self.desugar(ast)

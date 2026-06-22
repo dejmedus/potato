@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'test_helper'
 
 class PotatoTest < Minitest::Test
@@ -223,7 +225,7 @@ class PotatoTest < Minitest::Test
       say add3 (2, 2)
     POTATO
 
-    assert_includes output, "main.potato:2: error: Is this defined?: add3"
+    assert_includes output, "potato:2: error: Is this defined?: add3"
   end
 
   def test_static_non_function_call
@@ -232,6 +234,6 @@ class PotatoTest < Minitest::Test
       say x()
     POTATO
 
-    assert_includes output, "main.potato:2: error: Should be a function: x"
+    assert_includes output, "potato:2: error: Should be a function: x"
   end
 end
